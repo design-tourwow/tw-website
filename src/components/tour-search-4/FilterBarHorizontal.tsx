@@ -98,7 +98,7 @@ export default function FilterBarHorizontal({ filters, onFilterChange, onReset, 
           {icon}
           <span>{label}</span>
           {activeCount > 0 && (
-            <span className="bg-white text-blue-600 text-xs font-bold px-1.5 py-0.5 rounded-full">
+            <span className="ml-1 bg-white/20 text-white text-xs font-semibold px-2 py-0.5 rounded-full min-w-[20px] text-center">
               {activeCount}
             </span>
           )}
@@ -140,13 +140,22 @@ export default function FilterBarHorizontal({ filters, onFilterChange, onReset, 
           >
             <div className="space-y-2">
               {holidays.map((holiday) => (
-                <label key={holiday.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={filters.holidays?.includes(holiday.value) || false}
-                    onChange={() => handleCheckboxChange('holidays', holiday.value)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
+                <label key={holiday.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
+                  <div className="relative flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={filters.holidays?.includes(holiday.value) || false}
+                      onChange={() => handleCheckboxChange('holidays', holiday.value)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                      {filters.holidays?.includes(holiday.value) && (
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <span className="text-sm text-gray-700">{holiday.label}</span>
                 </label>
               ))}
@@ -161,13 +170,22 @@ export default function FilterBarHorizontal({ filters, onFilterChange, onReset, 
           >
             <div className="space-y-2">
               {priceRanges.map((range) => (
-                <label key={range.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={filters.priceRanges?.includes(range.value) || false}
-                    onChange={() => handleCheckboxChange('priceRanges', range.value)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
+                <label key={range.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
+                  <div className="relative flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={filters.priceRanges?.includes(range.value) || false}
+                      onChange={() => handleCheckboxChange('priceRanges', range.value)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                      {filters.priceRanges?.includes(range.value) && (
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <span className="text-sm text-gray-700">{range.label}</span>
                 </label>
               ))}
@@ -186,13 +204,22 @@ export default function FilterBarHorizontal({ filters, onFilterChange, onReset, 
           >
             <div className="space-y-2">
               {durations.map((duration) => (
-                <label key={duration.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={filters.durations?.includes(duration.value) || false}
-                    onChange={() => handleCheckboxChange('durations', duration.value)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
+                <label key={duration.value} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
+                  <div className="relative flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={filters.durations?.includes(duration.value) || false}
+                      onChange={() => handleCheckboxChange('durations', duration.value)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                      {filters.durations?.includes(duration.value) && (
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <span className="text-sm text-gray-700">{duration.label}</span>
                 </label>
               ))}
@@ -211,13 +238,22 @@ export default function FilterBarHorizontal({ filters, onFilterChange, onReset, 
           >
             <div className="space-y-2">
               {[3, 4, 5].map((stars) => (
-                <label key={stars} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={filters.rating === stars}
-                    onChange={() => onFilterChange('rating', filters.rating === stars ? 0 : stars)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                  />
+                <label key={stars} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
+                  <div className="relative flex-shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={filters.rating === stars}
+                      onChange={() => onFilterChange('rating', filters.rating === stars ? 0 : stars)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                      {filters.rating === stars && (
+                        <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                  </div>
                   <span className="text-sm text-gray-700 flex items-center gap-1.5">
                     <span>{stars} ดาว</span>
                     <div className="flex">

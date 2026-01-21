@@ -107,7 +107,12 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
             <span>ตามวันหยุด</span>
           </label>
           <div className={`space-y-2 pl-1 ${!showAllHolidays ? 'max-h-48 overflow-y-auto hide-scrollbar' : ''}`}>
-            {(showAllHolidays ? holidays : holidays.slice(0, 5)).map((holiday) => {
+            {(showAllHolidays ? holidays : holidays.slice(0, 5))
+              .filter((holiday) => {
+                const count = filterCounts.holidays[holiday.value] || 0
+                return count > 0
+              })
+              .map((holiday) => {
               const count = filterCounts.holidays[holiday.value] || 0
               return (
                 <label key={holiday.value} className="flex items-center justify-between cursor-pointer group px-2 py-2 -mx-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
@@ -120,9 +125,11 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         className="peer sr-only"
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center group-hover:border-blue-400 group-hover:shadow-sm">
-                        <svg className="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        {filters.holidays?.includes(holiday.value) && (
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
                       </div>
                     </div>
                     <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
@@ -136,7 +143,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
           </div>
 
           {/* Show More/Less Button for Holidays */}
-          {holidays.length > 5 && (
+          {holidays.filter(h => (filterCounts.holidays[h.value] || 0) > 0).length > 5 && (
             <button
               onClick={() => setShowAllHolidays(!showAllHolidays)}
               className="mt-4 ml-1 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1.5 transition-colors"
@@ -163,7 +170,12 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
             <span>ช่วงราคา (บาท)</span>
           </label>
           <div className="space-y-2 pl-1">
-            {priceRanges.map((range) => {
+            {priceRanges
+              .filter((range) => {
+                const count = filterCounts.priceRanges[range.value] || 0
+                return count > 0
+              })
+              .map((range) => {
               const count = filterCounts.priceRanges[range.value] || 0
               return (
                 <label key={range.value} className="flex items-center justify-between cursor-pointer group px-2 py-2 -mx-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
@@ -176,9 +188,11 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         className="peer sr-only"
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center group-hover:border-blue-400 group-hover:shadow-sm">
-                        <svg className="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        {filters.priceRanges?.includes(range.value) && (
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
                       </div>
                     </div>
                     <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
@@ -203,7 +217,12 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
             <span>ระยะเวลา</span>
           </label>
           <div className="space-y-2 pl-1">
-            {durations.map((duration) => {
+            {durations
+              .filter((duration) => {
+                const count = filterCounts.durations[duration.value] || 0
+                return count > 0
+              })
+              .map((duration) => {
               const count = filterCounts.durations[duration.value] || 0
               return (
                 <label key={duration.value} className="flex items-center justify-between cursor-pointer group px-2 py-2 -mx-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
@@ -216,9 +235,11 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         className="peer sr-only"
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center group-hover:border-blue-400 group-hover:shadow-sm">
-                        <svg className="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        {filters.durations?.includes(duration.value) && (
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
                       </div>
                     </div>
                     <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
@@ -259,7 +280,12 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
 
           {/* Airlines List */}
           <div className={`space-y-2 pl-1 ${!showAllAirlines ? 'max-h-48 overflow-y-auto hide-scrollbar' : ''}`}>
-            {(showAllAirlines ? filteredAirlines : filteredAirlines.slice(0, 5)).map((airline) => {
+            {(showAllAirlines ? filteredAirlines : filteredAirlines.slice(0, 5))
+              .filter((airline) => {
+                const count = filterCounts.airlines[airline.value] || 0
+                return count > 0
+              })
+              .map((airline) => {
               const count = filterCounts.airlines[airline.value] || 0
               return (
                 <label key={airline.value} className="flex items-center justify-between cursor-pointer group px-2 py-2 -mx-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
@@ -272,9 +298,11 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         className="peer sr-only"
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center group-hover:border-blue-400 group-hover:shadow-sm">
-                        <svg className="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        {filters.airlines?.includes(airline.value) && (
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
                       </div>
                     </div>
                     <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
@@ -288,7 +316,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
           </div>
 
           {/* Show More/Less Button */}
-          {filteredAirlines.length > 5 && (
+          {filteredAirlines.filter(a => (filterCounts.airlines[a.value] || 0) > 0).length > 5 && (
             <button
               onClick={() => setShowAllAirlines(!showAllAirlines)}
               className="mt-4 ml-1 text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1.5 transition-colors"
@@ -317,7 +345,12 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
             <span>จำนวนดาวโรงแรม</span>
           </label>
           <div className="space-y-2 pl-1">
-            {[3, 4, 5].map((stars) => {
+            {[3, 4, 5]
+              .filter((stars) => {
+                const count = filterCounts.ratings[stars] || 0
+                return count > 0
+              })
+              .map((stars) => {
               const count = filterCounts.ratings[stars] || 0
               return (
                 <label key={stars} className="flex items-center justify-between cursor-pointer group px-2 py-2 -mx-2 rounded-lg hover:bg-blue-50 transition-all duration-200">
@@ -330,9 +363,11 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         className="peer sr-only"
                       />
                       <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center group-hover:border-blue-400 group-hover:shadow-sm">
-                        <svg className="w-3.5 h-3.5 text-white scale-0 peer-checked:scale-100 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
+                        {filters.rating === stars && (
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
                       </div>
                     </div>
                     <span className="ml-3 flex items-center gap-1.5">

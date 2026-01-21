@@ -271,14 +271,23 @@ export default function AdvancedFilterModal({
                     {holidays.map((holiday) => (
                       <label
                         key={holiday.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
                       >
-                        <input
-                          type="checkbox"
-                          checked={filters.holidays?.includes(holiday.value) || false}
-                          onChange={() => handleCheckboxChange('holidays', holiday.value)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={filters.holidays?.includes(holiday.value) || false}
+                            onChange={() => handleCheckboxChange('holidays', holiday.value)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            {filters.holidays?.includes(holiday.value) && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                         <span className="text-sm font-medium text-gray-900">{holiday.label}</span>
                       </label>
                     ))}
@@ -301,14 +310,23 @@ export default function AdvancedFilterModal({
                     {priceRanges.map((range) => (
                       <label
                         key={range.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
                       >
-                        <input
-                          type="checkbox"
-                          checked={filters.priceRanges?.includes(range.value) || false}
-                          onChange={() => handleCheckboxChange('priceRanges', range.value)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={filters.priceRanges?.includes(range.value) || false}
+                            onChange={() => handleCheckboxChange('priceRanges', range.value)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            {filters.priceRanges?.includes(range.value) && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                         <span className="text-sm font-medium text-gray-900">{range.label}</span>
                       </label>
                     ))}
@@ -336,14 +354,23 @@ export default function AdvancedFilterModal({
                     {durations.map((duration) => (
                       <label
                         key={duration.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
                       >
-                        <input
-                          type="checkbox"
-                          checked={filters.durations?.includes(duration.value) || false}
-                          onChange={() => handleCheckboxChange('durations', duration.value)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={filters.durations?.includes(duration.value) || false}
+                            onChange={() => handleCheckboxChange('durations', duration.value)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            {filters.durations?.includes(duration.value) && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                         <span className="text-sm font-medium text-gray-900">{duration.label}</span>
                       </label>
                     ))}
@@ -378,14 +405,23 @@ export default function AdvancedFilterModal({
                     {filteredAirlines.map((airline) => (
                       <label
                         key={airline.value}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
                       >
-                        <input
-                          type="checkbox"
-                          checked={filters.airlines?.includes(airline.value) || false}
-                          onChange={() => handleCheckboxChange('airlines', airline.value)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={filters.airlines?.includes(airline.value) || false}
+                            onChange={() => handleCheckboxChange('airlines', airline.value)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            {filters.airlines?.includes(airline.value) && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                         <span className="text-sm font-medium text-gray-900 flex-1">{airline.label}</span>
                         <span className="text-xs text-gray-500">({airline.count})</span>
                       </label>
@@ -409,14 +445,23 @@ export default function AdvancedFilterModal({
                     {[3, 4, 5].map((stars) => (
                       <label
                         key={stars}
-                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 cursor-pointer transition-all group"
                       >
-                        <input
-                          type="checkbox"
-                          checked={filters.rating === stars}
-                          onChange={() => onFilterChange('rating', filters.rating === stars ? 0 : stars)}
-                          className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                        />
+                        <div className="relative flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            checked={filters.rating === stars}
+                            onChange={() => onFilterChange('rating', filters.rating === stars ? 0 : stars)}
+                            className="sr-only peer"
+                          />
+                          <div className="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all duration-200 flex items-center justify-center">
+                            {filters.rating === stars && (
+                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
                         <span className="text-sm font-medium text-gray-900">{stars} ดาว</span>
                         <div className="flex">
                           {[...Array(stars)].map((_, i) => (

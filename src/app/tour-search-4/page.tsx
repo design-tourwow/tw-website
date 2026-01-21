@@ -420,14 +420,14 @@ export default function TourSearchPage() {
                 {/* Filter Button - Dark to Medium (Left to Right) */}
                 <button
                   onClick={() => setIsMobileFilterOpen(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-700 to-blue-600 text-white font-medium hover:from-blue-800 hover:to-blue-700 transition-all relative"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-700 to-blue-600 text-white font-medium hover:from-blue-800 hover:to-blue-700 transition-all"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                   </svg>
                   <span className="text-sm">ตัวกรอง</span>
                   {activeFilterCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold min-w-[18px] text-center shadow-md">
+                    <span className="bg-white/90 text-blue-700 text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
                       {activeFilterCount}
                     </span>
                   )}
@@ -497,7 +497,7 @@ export default function TourSearchPage() {
             <div 
               className="grid gap-4 sm:gap-6"
               style={{ 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 412px), 1fr))'
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
               }}
             >
               {[...Array(8)].map((_, i) => (
@@ -508,7 +508,7 @@ export default function TourSearchPage() {
             <div 
               className="grid gap-4 sm:gap-6"
               style={{ 
-                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 412px), 1fr))'
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
               }}
             >
               {filteredTours.map((tour, index) => (
