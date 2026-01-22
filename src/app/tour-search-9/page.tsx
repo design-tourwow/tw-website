@@ -265,17 +265,23 @@ export default function TourSearchPage() {
           <main className="flex-1">
           {/* Results Bar */}
           <div className="mb-4 sm:mb-6">
-            {/* Results Count - Mobile & Desktop */}
-            <div className="flex items-center gap-2 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
-              <span className="text-sm sm:text-base text-gray-600">พบ</span>
-              <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
-              <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
+            {/* Results Count & Sort - Desktop: Same Line, Mobile: Separate */}
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
+              {/* Results Count */}
+              <div className="flex items-center gap-2">
+                <span className="text-sm sm:text-base text-gray-600">พบ</span>
+                <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
+                <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
+              </div>
+
+              {/* Desktop Sort Dropdown - Same Line */}
+              <div className="hidden lg:block">
+                <SortDropdown value={sortBy} onChange={setSortBy} />
+              </div>
             </div>
 
-            {/* Filter & Sort Buttons Container */}
-            <div className="flex items-center justify-end">
-              {/* Filter & Sort Combined Button - Mobile Only */}
-              <div className="lg:hidden relative flex-1">
+            {/* Filter & Sort Buttons Container - Mobile Only */}
+            <div className="lg:hidden relative flex-1">
               <div className="flex items-center rounded-2xl overflow-hidden shadow-lg">
                 {/* Filter Button - Dark to Medium (Left to Right) */}
                 <button
@@ -343,12 +349,6 @@ export default function TourSearchPage() {
                   </div>
                 </>
               )}
-            </div>
-
-              {/* Desktop Sort Dropdown */}
-              <div className="hidden lg:block">
-                <SortDropdown value={sortBy} onChange={setSortBy} />
-              </div>
             </div>
           </div>
 
