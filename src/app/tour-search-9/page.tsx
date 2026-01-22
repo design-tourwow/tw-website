@@ -12,6 +12,7 @@ import Breadcrumb from '@/components/tour-search-9/Breadcrumb'
 import SEOContent from '@/components/tour-search-9/SEOContent'
 import SearchBarWithSuggestions from '@/components/tour-search-9/SearchBarWithSuggestions'
 import AdvancedFilterModal from '@/components/tour-search-9/AdvancedFilterModal'
+import AnimatedTitle from '@/components/tour-search-9/AnimatedTitle'
 
 export default function TourSearchPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -237,9 +238,7 @@ export default function TourSearchPage() {
         <div className="mx-auto relative z-10" style={{ maxWidth: '1200px' }}>
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-              <span className="inline-block bg-gradient-to-r from-white via-[#e6f7ff] to-white bg-clip-text text-transparent drop-shadow-2xl">
-                ทัวร์ญี่ปุ่น
-              </span>
+              <AnimatedTitle text="ทัวร์ญี่ปุ่น" />
             </h1>
           </div>
         </div>
@@ -297,7 +296,7 @@ export default function TourSearchPage() {
             {/* Results Bar */}
             <div className="mb-4 sm:mb-6">
               {/* Results Count & Sort - Desktop: Same Line, Mobile: Separate Lines Right Aligned */}
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3 sm:mb-4 lg:pb-3 lg:sm:pb-4 lg:border-b lg:border-gray-200">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3 sm:mb-4">
                 {/* Mobile: Results Count (Center Aligned) */}
                 <div className="lg:hidden flex items-center justify-center gap-2">
                   <span className="text-sm text-gray-600">พบ</span>
