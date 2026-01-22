@@ -10,7 +10,7 @@ import EmptyState from '@/components/tour-search-9/EmptyState'
 import PopularDestinations from '@/components/tour-search-9/PopularDestinations'
 import Breadcrumb from '@/components/tour-search-9/Breadcrumb'
 import SEOContent from '@/components/tour-search-9/SEOContent'
-import SearchBar from '@/components/tour-search-9/SearchBar'
+import SearchBarWithSuggestions from '@/components/tour-search-9/SearchBarWithSuggestions'
 import AdvancedFilterModal from '@/components/tour-search-9/AdvancedFilterModal'
 
 export default function TourSearchPage() {
@@ -120,6 +120,8 @@ export default function TourSearchPage() {
     durations: [] as string[],
     airlines: [] as string[]
   })
+  
+  const [selectedSearchTags, setSelectedSearchTags] = useState<string[]>([])
   
   const [sortBy, setSortBy] = useState('popular')
   
@@ -234,16 +236,43 @@ export default function TourSearchPage() {
         </div>
       </section>
 
-      {/* Search Bar */}
-      <SearchBar 
-        value={filters.searchQuery}
-        onChange={(value) => handleFilterChange('searchQuery', value)}
-        onFilterClick={() => setIsMobileFilterOpen(true)}
-      />
+      {/* Mobile Search Bar - Sticky */}
+      <div className="lg:hidden">
+        <div className="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm px-4 py-2">
+          <SearchBarWithSuggestions 
+            value={filters.searchQuery}
+            onChange={(value) => handleFilterChange('searchQuery', value)}
+            selectedTags={selectedSearchTags}
+            onTagsChange={setSelectedSearchTags}
+          />
+          <button
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white font-medium rounded-xl hover:from-[#0187e6] hover:to-blue-800 transition-all"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+            <span className="text-sm">ตัวกรอง</span>
+          </button>
+        </div>
+      </div>
 
-      {/* Breadcrumb & Popular Destinations */}
+      {/* Breadcrumb & Search & Popular Destinations */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
         <Breadcrumb />
+        
+        {/* Desktop Search Bar */}
+        <div className="hidden lg:block my-6">
+          <div className="max-w-full mx-auto">
+            <SearchBarWithSuggestions 
+              value={filters.searchQuery}
+              onChange={(value) => handleFilterChange('searchQuery', value)}
+              selectedTags={selectedSearchTags}
+              onTagsChange={setSelectedSearchTags}
+            />
+          </div>
+        </div>
+        
         <PopularDestinations />
       </div>
 
