@@ -1,0 +1,500 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { tourDatabase, filterAndSortTours, calculateFilterCounts } from '@/lib/tour-data-search'
+import TourCard from '@/components/tour-search-9/TourCard'
+import FilterSidebar from '@/components/tour-search-9/FilterSidebar'
+import SortDropdown from '@/components/tour-search-9/SortDropdown'
+import TourCardSkeleton from '@/components/tour-search-9/TourCardSkeleton'
+import EmptyState from '@/components/tour-search-9/EmptyState'
+import PopularDestinations from '@/components/tour-search-9/PopularDestinations'
+import Breadcrumb from '@/components/tour-search-9/Breadcrumb'
+import SEOContent from '@/components/tour-search-9/SEOContent'
+import SearchBar from '@/components/tour-search-9/SearchBar'
+import AdvancedFilterModal from '@/components/tour-search-9/AdvancedFilterModal'
+
+export default function TourSearchPage() {
+  const [isLoading, setIsLoading] = useState(true)
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
+  const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [showGoToTop, setShowGoToTop] = useState(false)
+  
+  const sortOptions = [
+    { 
+      value: 'popular', 
+      label: 'ยอดนิยม',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      )
+    },
+    { 
+      value: 'price-asc', 
+      label: 'ราคาต่ำสุด',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+        </svg>
+      )
+    },
+    { 
+      value: 'price-desc', 
+      label: 'ราคาสูงสุด',
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+        </svg>
+      )
+    },
+    { 
+      value: 'rating', 
+      label: 'คะแนนสูงสุด',
+      icon: (
+        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      )
+    },
+  ]
+  
+  // Prevent body scroll when mobile filter is open
+  useEffect(() => {
+    if (isMobileFilterOpen) {
+      const scrollY = window.scrollY
+      document.body.style.overflow = 'hidden'
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${scrollY}px`
+      document.body.style.left = '0'
+      document.body.style.right = '0'
+      document.body.style.width = '100%'
+    } else {
+      const scrollY = document.body.style.top
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY || '0') * -1)
+      }
+    }
+    
+    return () => {
+      document.body.style.overflow = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
+    }
+  }, [isMobileFilterOpen])
+  
+  // Detect scroll for "Go to Top" button
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button when scrolled down 300px
+      setShowGoToTop(window.scrollY > 300)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+  
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    region: 'all',
+    priceRange: 'all',
+    duration: 'all',
+    airline: 'all',
+    rating: 0,
+    searchQuery: '',
+    holidays: [] as string[],
+    priceRanges: [] as string[],
+    durations: [] as string[],
+    airlines: [] as string[]
+  })
+  
+  const [sortBy, setSortBy] = useState('popular')
+  
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800)
+    return () => clearTimeout(timer)
+  }, [])
+  
+  // Filter and sort tours
+  const filteredTours = useMemo(() => {
+    return filterAndSortTours(tourDatabase, filters, sortBy)
+  }, [filters, sortBy])
+  
+  // Calculate filter counts for real-time updates
+  const filterCounts = useMemo(() => {
+    return calculateFilterCounts(tourDatabase, filters)
+  }, [filters])
+  
+  const handleFilterChange = (key: string, value: any) => {
+    setFilters(prev => ({ ...prev, [key]: value }))
+  }
+  
+  const handleResetFilters = () => {
+    setFilters({
+      region: 'all',
+      priceRange: 'all',
+      duration: 'all',
+      airline: 'all',
+      rating: 0,
+      searchQuery: '',
+      holidays: [],
+      priceRanges: [],
+      durations: [],
+      airlines: []
+    })
+  }
+  
+  const activeFilterCount = [
+    ...filters.holidays,
+    ...filters.priceRanges,
+    ...filters.durations,
+    ...filters.airlines,
+    filters.rating !== 0 ? filters.rating : null,
+    filters.searchQuery
+  ].filter(Boolean).length
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <style jsx>{`
+        @keyframes expandPrice {
+          from { 
+            transform: translateY(100%); 
+            opacity: 0;
+          }
+          to { 
+            transform: translateY(0); 
+            opacity: 1;
+          }
+        }
+        @keyframes contractPrice {
+          from { 
+            transform: translateY(0); 
+            opacity: 1; 
+          }
+          to { 
+            transform: translateY(100%); 
+            opacity: 0; 
+          }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        .animate-bounce-horizontal {
+          animation: bounce-horizontal 1.5s ease-in-out infinite;
+        }
+        @keyframes bounce-horizontal {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-3px); }
+          75% { transform: translateX(3px); }
+        }
+      `}</style>
+      
+      {/* Hero Section */}
+      <section className="relative bg-gray-900 text-white py-20 sm:py-24 md:py-32 lg:py-40 px-4 overflow-hidden">
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&h=600&fit=crop&auto=format&q=80)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        >
+          {/* Lighter Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/15 to-black/25" />
+        </div>
+
+        <div className="mx-auto relative z-10" style={{ maxWidth: '1200px' }}>
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+              <span className="inline-block bg-gradient-to-r from-white via-[#e6f7ff] to-white bg-clip-text text-transparent drop-shadow-2xl">
+                ทัวร์ญี่ปุ่น
+              </span>
+            </h1>
+          </div>
+        </div>
+      </section>
+
+      {/* Search Bar */}
+      <SearchBar 
+        value={filters.searchQuery}
+        onChange={(value) => handleFilterChange('searchQuery', value)}
+        onFilterClick={() => setIsMobileFilterOpen(true)}
+      />
+
+      {/* Breadcrumb & Popular Destinations */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
+        <Breadcrumb />
+        <PopularDestinations />
+      </div>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
+        <div className="flex gap-6">
+          {/* Sidebar - Desktop */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <FilterSidebar
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onReset={handleResetFilters}
+              activeCount={activeFilterCount}
+              filterCounts={filterCounts}
+            />
+          </aside>
+
+          {/* Main Content Area */}
+          <main className="flex-1">
+          {/* Results Bar */}
+          <div className="mb-4 sm:mb-6">
+            {/* Results Count - Mobile & Desktop */}
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
+              <span className="text-sm sm:text-base text-gray-600">พบ</span>
+              <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
+              <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
+            </div>
+
+            {/* Filter & Sort Buttons Container */}
+            <div className="flex items-center justify-end">
+              {/* Filter & Sort Combined Button - Mobile Only */}
+              <div className="lg:hidden relative flex-1">
+              <div className="flex items-center rounded-2xl overflow-hidden shadow-lg">
+                {/* Filter Button - Dark to Medium (Left to Right) */}
+                <button
+                  onClick={() => setIsMobileFilterOpen(true)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#0187e6] to-[#019dff] text-white font-medium hover:from-blue-800 hover:to-[#0187e6] transition-all"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  <span className="text-sm">ตัวกรอง</span>
+                  {activeFilterCount > 0 && (
+                    <span className="bg-white/90 text-[#0187e6] text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
+                      {activeFilterCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Sort Button - Medium to Dark (Left to Right) */}
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white font-medium hover:from-[#0187e6] hover:to-blue-800 transition-all"
+                >
+                  <span className="text-sm">เรียงตาม</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Sort Dropdown Menu */}
+              {isOpen && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-40"
+                    onClick={() => setIsOpen(false)}
+                  />
+                  <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50 overflow-hidden">
+                    {sortOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          setSortBy(option.value)
+                          setIsOpen(false)
+                        }}
+                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
+                          sortBy === option.value
+                            ? 'bg-[#e6f7ff] text-[#0187e6]'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <span className={`flex-shrink-0 ${sortBy === option.value ? 'text-[#019dff]' : 'text-gray-500'}`}>
+                          {option.icon}
+                        </span>
+                        <span className="flex-1 text-left font-medium">{option.label}</span>
+                        {sortBy === option.value && (
+                          <svg className="w-5 h-5 text-[#019dff] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+              {/* Desktop Sort Dropdown */}
+              <div className="hidden lg:block">
+                <SortDropdown value={sortBy} onChange={setSortBy} />
+              </div>
+            </div>
+          </div>
+
+          {/* Tour Grid */}
+          {isLoading ? (
+            <div 
+              className="grid gap-4 sm:gap-6"
+              style={{ 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
+              }}
+            >
+              {[...Array(8)].map((_, i) => (
+                <TourCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : filteredTours.length > 0 ? (
+            <div 
+              className="grid gap-4 sm:gap-6"
+              style={{ 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
+              }}
+            >
+              {filteredTours.map((tour, index) => (
+                <div key={tour.id} className="relative overflow-hidden rounded-xl sm:rounded-2xl">
+                  <TourCard 
+                    tour={tour}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyState onReset={handleResetFilters} />
+          )}
+
+          {/* SEO Content */}
+          <SEOContent />
+        </main>
+      </div>
+    </div>
+
+      {/* Mobile Filter Modal */}
+      {isMobileFilterOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setIsMobileFilterOpen(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl overflow-hidden flex flex-col">
+            {/* Header - Fixed */}
+            <div className="flex-shrink-0 bg-gradient-to-r from-[#019dff] to-[#0187e6] px-5 py-4 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">ตัวกรอง</h2>
+                  {activeFilterCount > 0 && (
+                    <p className="text-xs text-blue-100">เลือกแล้ว {activeFilterCount} รายการ</p>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={() => setIsMobileFilterOpen(false)}
+                className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm hover:bg-white/30 flex items-center justify-center transition-colors"
+              >
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Filter Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto bg-gray-50">
+              <div className="p-5">
+                <FilterSidebar
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onReset={handleResetFilters}
+                  activeCount={activeFilterCount}
+                  filterCounts={filterCounts}
+                />
+              </div>
+            </div>
+
+            {/* Footer - Fixed */}
+            <div className="flex-shrink-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+              <div className="flex gap-3">
+                {activeFilterCount > 0 && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="flex-1 bg-gray-100 text-gray-700 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    ล้าง
+                  </button>
+                )}
+                <button
+                  onClick={() => setIsMobileFilterOpen(false)}
+                  className={`${activeFilterCount > 0 ? 'flex-[2]' : 'flex-1'} bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white py-3.5 rounded-xl font-semibold hover:from-[#0187e6] hover:to-blue-800 transition-all shadow-lg flex items-center justify-center gap-2`}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  แสดงผล {filteredTours.length} ทัวร์
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Advanced Filter Modal 2 */}
+      <AdvancedFilterModal
+        isOpen={isAdvancedFilterOpen}
+        onClose={() => setIsAdvancedFilterOpen(false)}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={handleResetFilters}
+        activeCount={activeFilterCount}
+        resultsCount={filteredTours.length}
+      />
+
+      {/* Go to Top Button */}
+      {showGoToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white rounded-full shadow-lg hover:from-[#0187e6] hover:to-blue-800 transition-all flex items-center justify-center group hover:scale-110"
+          aria-label="กลับไปด้านบน"
+        >
+          <svg 
+            className="w-6 h-6 transform group-hover:-translate-y-0.5 transition-transform" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+          </svg>
+        </button>
+      )}
+    </div>
+  )
+}
