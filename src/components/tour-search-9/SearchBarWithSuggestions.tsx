@@ -16,6 +16,7 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [tourSuggestions, setTourSuggestions] = useState<TourData[]>([])
   const [isTyping, setIsTyping] = useState(false)
+  const [searchType, setSearchType] = useState<'tag' | 'program' | 'default'>('default') // Track search type
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -70,11 +71,22 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
     'ฮันนีมูน'
   ]
 
+  // Update search type based on current state
+  useEffect(() => {
+    if (selectedTags.length > 0) {
+      setSearchType('tag')
+    } else if (value.length > 0) {
+      setSearchType('program')
+    } else {
+      setSearchType('default')
+    }
+  }, [selectedTags, value])
+
   // Filter suggestions based on input
   useEffect(() => {
     if (isFocused) {
-      if (value.length >= 2) {
-        // When typing, show tour name suggestions (not tags)
+      if (value.length >= 3) {
+        // When typing 3+ characters, show tour name suggestions (not tags)
         const query = value.toLowerCase()
         const matchedTours = tourDatabase.filter(tour => {
           // Match against tour title
@@ -86,12 +98,12 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
             return true
           }
           return false
-        }).slice(0, 5) // Limit to 5 suggestions
+        }) // Show all matched tours (no limit)
         
         setTourSuggestions(matchedTours)
         setSuggestions([]) // Clear tag suggestions when typing
-      } else if (value.length === 0 && selectedTags.length === 0) {
-        // Show popular keyword tags only when input is empty and no tags selected
+      } else if (value.length === 0) {
+        // Show popular keyword tags when input is empty (regardless of selected tags)
         const available = allKeywords.filter(keyword => !selectedTags.includes(keyword))
         setSuggestions(available)
         setTourSuggestions([])
@@ -132,6 +144,7 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
     // Add tag (no toggle, just add)
     if (!selectedTags.includes(keyword)) {
       onTagsChange([...selectedTags, keyword])
+      setSearchType('tag') // Set type to tag
     }
     // Clear input when selecting a tag
     onChange('')
@@ -139,16 +152,27 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
   }
 
   const handleTourSuggestionClick = (tour: TourData) => {
-    // When clicking a tour suggestion, set it as search query
-    onChange(tour.title)
+    // When clicking a tour suggestion, CLEAR ALL TAGS and use keyword instead
+    if (onTagsChange) {
+      onTagsChange([]) // Clear all tags
+    }
+    onChange(tour.title) // Set tour title as keyword
+    setSearchType('program') // Set type to program
     setIsFocused(false)
     inputRef.current?.blur()
   }
 
   const handleSearchClick = () => {
     // Trigger search with current query and tags
+    // Tags and Keyword are mutually exclusive
     if (onSearch) {
-      onSearch(value, selectedTags)
+      if (selectedTags.length > 0) {
+        // Search with tags only
+        onSearch('', selectedTags)
+      } else {
+        // Search with keyword only
+        onSearch(value, [])
+      }
     }
     setIsFocused(false)
     inputRef.current?.blur()
@@ -156,7 +180,12 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
 
   const handleRemoveTag = (tagToRemove: string) => {
     if (!onTagsChange) return
-    onTagsChange(selectedTags.filter(tag => tag !== tagToRemove))
+    const newTags = selectedTags.filter(tag => tag !== tagToRemove)
+    onTagsChange(newTags)
+    // Reset search type if no tags left
+    if (newTags.length === 0) {
+      setSearchType('default')
+    }
   }
 
   const handleVoiceSearch = () => {
@@ -177,6 +206,9 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
         // Clear input first
         onChange('')
         
+        // Set focused to show suggestions during typing
+        setIsFocused(true)
+        
         // Start typing animation
         setTimeout(() => {
           typeText(transcript, (currentText) => {
@@ -195,21 +227,60 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-1.5">
         <div className="flex gap-2">
           <div className="flex-1 relative">
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="20" 
-              height="20" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              className="absolute left-3 top-3 text-gray-400 w-5 h-5 z-10"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </svg>
+            {/* Dynamic Icon based on search type */}
+            {searchType === 'tag' ? (
+              // Tag Icon
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="absolute left-3 top-3 text-[#019dff] w-5 h-5 z-10"
+              >
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+              </svg>
+            ) : searchType === 'program' ? (
+              // Globe/World Icon for Tour Program
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="absolute left-3 top-3 text-[#019dff] w-5 h-5 z-10"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            ) : (
+              // Default Map Pin Icon (Location/Travel)
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width="20" 
+                height="20" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="absolute left-3 top-3 text-gray-400 w-5 h-5 z-10"
+              >
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            )}
             
             <div className="w-full pl-11 pr-24 px-2 min-h-[48px] border-2 border-transparent rounded-lg transition-colors flex flex-wrap items-center gap-1.5">
               {/* Selected Tags */}
@@ -244,7 +315,7 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
               <input 
                 ref={inputRef}
                 type="text" 
-                placeholder={selectedTags.length === 0 ? "ค้นหาทัวร์ญี่ปุ่น..." : ""}
+                placeholder={selectedTags.length === 0 ? "ไปเที่ยวไหนดี? พิมพ์ชื่อจุดหมายที่อยากไป" : ""}
                 className="flex-1 min-w-[120px] outline-none text-base text-gray-900 bg-transparent" 
                 aria-label="ค้นหาทัวร์"
                 value={value}
@@ -316,51 +387,55 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
 
       {/* Suggestions Dropdown */}
       {(suggestions.length > 0 || tourSuggestions.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 py-3 z-50 max-h-80 overflow-y-auto">
-          {/* Tag Suggestions (Horizontal) */}
-          {suggestions.length > 0 && (
-            <>
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium">
-                คำค้นหายอดนิยม
-              </div>
-              <div className="flex flex-wrap gap-1.5 sm:gap-2 px-3">
-                {suggestions.map((keyword, index) => (
-                  <button
-                    key={index}
-                    onClick={() => handleSuggestionClick(keyword)}
-                    className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-gray-600 hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm"
-                  >
-                    {keyword}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
+          <div className="py-3">
+            {/* Tag Suggestions (Horizontal) */}
+            {suggestions.length > 0 && (
+              <>
+                <div className="px-4 py-2 text-xs text-gray-500 font-medium">
+                  คำค้นหายอดนิยม
+                </div>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 px-3">
+                  {suggestions.map((keyword, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(keyword)}
+                      className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-gray-600 hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm"
+                    >
+                      {keyword}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
 
-          {/* Tour Name Suggestions (Vertical List) */}
-          {tourSuggestions.length > 0 && (
-            <>
-              <div className="px-4 py-2 text-xs text-gray-500 font-medium">
-                โปรแกรมทัวร์ที่เกี่ยวข้อง
-              </div>
-              <div className="flex flex-col">
-                {tourSuggestions.map((tour, index) => (
-                  <button
-                    key={tour.id}
-                    onClick={() => handleTourSuggestionClick(tour)}
-                    className="w-full text-left px-4 py-3 hover:bg-[#e6f7ff] transition-colors border-b border-gray-100 last:border-b-0"
-                  >
-                    <div className="text-sm font-medium text-gray-900 line-clamp-1">
-                      {tour.title}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {tour.duration} • {tour.price.toLocaleString()} บาท
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
+            {/* Tour Name Suggestions (Vertical List) */}
+            {tourSuggestions.length > 0 && (
+              <>
+                <div className="px-4 py-2 text-xs text-gray-500 font-medium">
+                  โปรแกรมทัวร์ที่เกี่ยวข้อง ({tourSuggestions.length} โปรแกรม)
+                </div>
+                <div className="flex flex-col">
+                  {tourSuggestions.map((tour) => (
+                    <button
+                      key={tour.id}
+                      onClick={() => handleTourSuggestionClick(tour)}
+                      className="w-full text-left px-4 py-3 hover:bg-[#e6f7ff] transition-colors border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-gray-900 line-clamp-1">
+                          {tour.title}
+                        </span>
+                        <span className="text-xs text-gray-500 flex-shrink-0">
+                          {tour.features.slice(0, 2).join(', ')}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -121,7 +121,6 @@ export default function TourSearchPage() {
     airlines: [] as string[]
   })
   
-  const [selectedSearchTags, setSelectedSearchTags] = useState<string[]>([])
   const [pendingSearchQuery, setPendingSearchQuery] = useState('')
   const [pendingSearchTags, setPendingSearchTags] = useState<string[]>([])
   
@@ -162,7 +161,6 @@ export default function TourSearchPage() {
     })
     setPendingSearchQuery('')
     setPendingSearchTags([])
-    setSelectedSearchTags([])
   }
 
   const handleSearch = (query: string, tags: string[]) => {
@@ -247,31 +245,22 @@ export default function TourSearchPage() {
         </div>
       </section>
 
-      {/* Mobile Search Bar - Sticky */}
-      <div className="lg:hidden">
-        <div className="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm px-4 py-2">
-          <SearchBarWithSuggestions 
-            value={pendingSearchQuery}
-            onChange={setPendingSearchQuery}
-            selectedTags={pendingSearchTags}
-            onTagsChange={setPendingSearchTags}
-            onSearch={handleSearch}
-          />
-          <button
-            onClick={() => setIsMobileFilterOpen(true)}
-            className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white font-medium rounded-xl hover:from-[#0187e6] hover:to-blue-800 transition-all"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-            </svg>
-            <span className="text-sm">ตัวกรอง</span>
-          </button>
-        </div>
-      </div>
-
       {/* Breadcrumb & Search & Popular Destinations */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
         <Breadcrumb />
+        
+        {/* Mobile Search Bar - Below Breadcrumb */}
+        <div className="lg:hidden my-6">
+          <div className="max-w-full mx-auto">
+            <SearchBarWithSuggestions 
+              value={pendingSearchQuery}
+              onChange={setPendingSearchQuery}
+              selectedTags={pendingSearchTags}
+              onTagsChange={setPendingSearchTags}
+              onSearch={handleSearch}
+            />
+          </div>
+        </div>
         
         {/* Desktop Search Bar */}
         <div className="hidden lg:block my-6">
@@ -305,131 +294,139 @@ export default function TourSearchPage() {
 
           {/* Main Content Area */}
           <main className="flex-1">
-          {/* Results Bar */}
-          <div className="mb-4 sm:mb-6">
-            {/* Results Count & Sort - Desktop: Same Line, Mobile: Separate */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200">
-              {/* Results Count */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm sm:text-base text-gray-600">พบ</span>
-                <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
-                <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
-              </div>
-
-              {/* Desktop Sort Dropdown - Same Line */}
-              <div className="hidden lg:block">
-                <SortDropdown value={sortBy} onChange={setSortBy} />
-              </div>
-            </div>
-
-            {/* Filter & Sort Buttons Container - Mobile Only */}
-            <div className="lg:hidden relative flex-1">
-              <div className="flex items-center rounded-2xl overflow-hidden shadow-lg">
-                {/* Filter Button - Dark to Medium (Left to Right) */}
-                <button
-                  onClick={() => setIsMobileFilterOpen(true)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#0187e6] to-[#019dff] text-white font-medium hover:from-blue-800 hover:to-[#0187e6] transition-all"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
-                  <span className="text-sm">ตัวกรอง</span>
-                  {activeFilterCount > 0 && (
-                    <span className="bg-white/90 text-[#0187e6] text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
-                      {activeFilterCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Sort Button - Medium to Dark (Left to Right) */}
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white font-medium hover:from-[#0187e6] hover:to-blue-800 transition-all"
-                >
-                  <span className="text-sm">เรียงตาม</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Sort Dropdown Menu */}
-              {isOpen && (
-                <>
-                  <div 
-                    className="fixed inset-0 z-40"
-                    onClick={() => setIsOpen(false)}
-                  />
-                  <div className="absolute left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50 overflow-hidden">
-                    {sortOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          e.stopPropagation()
-                          setSortBy(option.value)
-                          setIsOpen(false)
-                        }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors ${
-                          sortBy === option.value
-                            ? 'bg-[#e6f7ff] text-[#0187e6]'
-                            : 'text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        <span className={`flex-shrink-0 ${sortBy === option.value ? 'text-[#019dff]' : 'text-gray-500'}`}>
-                          {option.icon}
-                        </span>
-                        <span className="flex-1 text-left font-medium">{option.label}</span>
-                        {sortBy === option.value && (
-                          <svg className="w-5 h-5 text-[#019dff] flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Tour Grid */}
-          {isLoading ? (
-            <div 
-              className="grid gap-4 sm:gap-6"
-              style={{ 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
-              }}
-            >
-              {[...Array(8)].map((_, i) => (
-                <TourCardSkeleton key={i} />
-              ))}
-            </div>
-          ) : filteredTours.length > 0 ? (
-            <div 
-              className="grid gap-4 sm:gap-6"
-              style={{ 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
-              }}
-            >
-              {filteredTours.map((tour, index) => (
-                <div key={tour.id} className="relative overflow-hidden rounded-xl sm:rounded-2xl">
-                  <TourCard 
-                    tour={tour}
-                  />
+            {/* Results Bar */}
+            <div className="mb-4 sm:mb-6">
+              {/* Results Count & Sort - Desktop: Same Line, Mobile: Separate Lines Right Aligned */}
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-3 sm:mb-4 lg:pb-3 lg:sm:pb-4 lg:border-b lg:border-gray-200">
+                {/* Mobile: Results Count (Center Aligned) */}
+                <div className="lg:hidden flex items-center justify-center gap-2">
+                  <span className="text-sm text-gray-600">พบ</span>
+                  <span className="font-bold text-[#019dff] text-lg">ทัวร์ญี่ปุ่น</span>
+                  <span className="text-sm text-gray-600">{filteredTours.length} โปรแกรม</span>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState onReset={handleResetFilters} />
-          )}
 
-          {/* SEO Content */}
-          <SEOContent />
-        </main>
+                {/* Desktop: Results Count */}
+                <div className="hidden lg:flex items-center gap-2">
+                  <span className="text-sm sm:text-base text-gray-600">พบ</span>
+                  <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
+                  <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
+                </div>
+
+                {/* Desktop Sort Dropdown - Same Line */}
+                <div className="hidden lg:block">
+                  <SortDropdown value={sortBy} onChange={setSortBy} />
+                </div>
+              </div>
+
+              {/* Mobile: Filter & Sort Buttons (Center Aligned) */}
+              <div className="lg:hidden flex justify-center mb-4">
+                <div className="relative w-4/5">
+                  <div className="flex items-center rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                    {/* Filter Button - 50% width */}
+                    <button
+                      onClick={() => setIsMobileFilterOpen(true)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border-r border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                      </svg>
+                      <span className="text-sm">ตัวกรอง</span>
+                      {activeFilterCount > 0 && (
+                        <span className="bg-[#019dff] text-white text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
+                          {activeFilterCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {/* Sort Button - 50% width */}
+                    <button
+                      onClick={() => setIsOpen(!isOpen)}
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all"
+                    >
+                      <span className="text-sm">เรียงตาม</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Sort Dropdown Menu */}
+                  {isOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setIsOpen(false)}
+                      />
+                      <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
+                        <div className="py-2">
+                          {[
+                            { value: 'popular', label: 'ความนิยม' },
+                            { value: 'price-low', label: 'ราคา: ต่ำ → สูง' },
+                            { value: 'price-high', label: 'ราคา: สูง → ต่ำ' },
+                            { value: 'duration-short', label: 'ระยะเวลา: สั้น → ยาว' },
+                            { value: 'duration-long', label: 'ระยะเวลา: ยาว → สั้น' },
+                            { value: 'newest', label: 'ใหม่ล่าสุด' }
+                          ].map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => {
+                                setSortBy(option.value as any)
+                                setIsOpen(false)
+                              }}
+                              className={`w-full text-left px-4 py-3 text-sm hover:bg-[#e6f7ff] transition-colors ${
+                                sortBy === option.value ? 'bg-[#e6f7ff] text-[#019dff] font-medium' : 'text-gray-700'
+                              }`}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Separator Line Before Tour Cards */}
+            <div className="border-b border-gray-200 mb-4 sm:mb-6"></div>
+
+            {/* Tour Grid */}
+            {isLoading ? (
+              <div 
+                className="grid gap-4 sm:gap-6"
+                style={{ 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
+                }}
+              >
+                {[...Array(8)].map((_, i) => (
+                  <TourCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : filteredTours.length > 0 ? (
+              <div 
+                className="grid gap-4 sm:gap-6"
+                style={{ 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
+                }}
+              >
+                {filteredTours.map((tour) => (
+                  <div key={tour.id} className="relative overflow-hidden rounded-xl sm:rounded-2xl">
+                    <TourCard 
+                      tour={tour}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState onReset={handleResetFilters} />
+            )}
+
+            {/* SEO Content */}
+            <SEOContent />
+          </main>
+        </div>
       </div>
-    </div>
 
       {/* Mobile Filter Modal */}
       {isMobileFilterOpen && (
@@ -443,25 +440,23 @@ export default function TourSearchPage() {
           {/* Modal Content */}
           <div className="absolute inset-y-0 left-0 w-full max-w-sm bg-white shadow-2xl overflow-hidden flex flex-col">
             {/* Header - Fixed */}
-            <div className="flex-shrink-0 bg-gradient-to-r from-[#019dff] to-[#0187e6] px-5 py-4 flex items-center justify-between shadow-lg">
+            <div className="flex-shrink-0 bg-gradient-to-r from-gray-100 to-gray-50 px-5 py-4 flex items-center justify-between shadow-sm border-b border-gray-200">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
-                </div>
+                <svg className="w-6 h-6 text-[#019dff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
                 <div>
-                  <h2 className="text-lg font-bold text-white">ตัวกรอง</h2>
+                  <h2 className="text-lg font-bold text-gray-800">ตัวกรอง</h2>
                   {activeFilterCount > 0 && (
-                    <p className="text-xs text-blue-100">เลือกแล้ว {activeFilterCount} รายการ</p>
+                    <p className="text-xs text-gray-600">เลือกแล้ว {activeFilterCount} รายการ</p>
                   )}
                 </div>
               </div>
               <button
                 onClick={() => setIsMobileFilterOpen(false)}
-                className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm hover:bg-white/30 flex items-center justify-center transition-colors"
+                className="w-10 h-10 rounded-xl bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition-colors"
               >
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -496,7 +491,7 @@ export default function TourSearchPage() {
                 )}
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className={`${activeFilterCount > 0 ? 'flex-[2]' : 'flex-1'} bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white py-3.5 rounded-xl font-semibold hover:from-[#0187e6] hover:to-blue-800 transition-all shadow-lg flex items-center justify-center gap-2`}
+                  className={`${activeFilterCount > 0 ? 'flex-[2]' : 'flex-1'} bg-[#019dff] text-white py-3.5 rounded-xl font-semibold hover:bg-[#0187e6] transition-all shadow-sm flex items-center justify-center gap-2`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -509,7 +504,7 @@ export default function TourSearchPage() {
         </div>
       )}
 
-      {/* Advanced Filter Modal 2 */}
+      {/* Advanced Filter Modal */}
       <AdvancedFilterModal
         isOpen={isAdvancedFilterOpen}
         onClose={() => setIsAdvancedFilterOpen(false)}

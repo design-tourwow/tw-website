@@ -33,8 +33,18 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
   const [showAllHolidays, setShowAllHolidays] = useState(false)
 
   const holidays = [
-    { value: 'new-year', label: 'วันปีใหม่' },
+    { value: 'valentine', label: 'วันวาเลนไทน์' },
+    { value: 'makha-bucha', label: 'วันมาฆบูชา' },
+    { value: 'chakri', label: 'วันจักรี' },
     { value: 'songkran', label: 'วันสงกรานต์' },
+    { value: 'labor-day', label: 'วันแรงงาน' },
+    { value: 'coronation', label: 'วันฉัตรมงคล' },
+    { value: 'visakha-bucha', label: 'วันวิสาขบูชา' },
+    { value: 'queen-birthday', label: 'ทัวร์วันเฉลิมฯพระราชินี' },
+    { value: 'king-birthday', label: 'วันเฉลิมพระชนมพรรษา ร.10' },
+    { value: 'asalha-bucha', label: 'วันอาสาฬหบูชา' },
+    { value: 'mothers-day', label: 'วันแม่' },
+    { value: 'new-year', label: 'วันปีใหม่' },
     { value: 'long-weekend', label: 'วันหยุดยาว' },
     { value: 'summer', label: 'ช่วงปิดเทอม' },
     { value: 'chinese-new-year', label: 'ตรุษจีน' },
@@ -83,24 +93,24 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       {/* Header */}
-      <div className="relative mb-6">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900">ตัวกรอง</h2>
         {activeCount > 0 && (
           <button
             onClick={onReset}
-            className="absolute top-0 right-0 text-sm text-[#019dff] hover:text-[#0187e6] font-medium transition-colors"
+            className="text-sm text-[#019dff] hover:text-[#0187e6] font-medium transition-colors"
           >
             ล้างทั้งหมด ({activeCount})
           </button>
         )}
       </div>
 
-      <div className="space-y-7">
+      <div className="space-y-5">
         {/* Holiday Filter */}
-        <div className="pb-6 border-b border-gray-100">
-          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 mb-4">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#019dff] flex items-center justify-center shadow-sm">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="pb-5 border-b border-gray-100">
+          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-600 mb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white flex items-center justify-center">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -132,7 +142,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         )}
                       </div>
                     </div>
-                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
+                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-normal transition-colors truncate">
                       {holiday.label}
                     </span>
                   </div>
@@ -146,7 +156,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
           {holidays.filter(h => (filterCounts.holidays[h.value] || 0) > 0).length > 5 && (
             <button
               onClick={() => setShowAllHolidays(!showAllHolidays)}
-              className="mt-4 ml-1 text-sm text-[#019dff] hover:text-[#0187e6] font-medium flex items-center gap-1.5 transition-colors"
+              className="mt-4 ml-1 text-sm text-[#019dff] hover:text-[#0187e6] font-normal flex items-center gap-1.5 transition-colors"
             >
               <span>{showAllHolidays ? 'แสดงวันหยุดน้อยลง' : 'แสดงวันหยุดทั้งหมด'}</span>
               <svg 
@@ -162,10 +172,10 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
         </div>
 
         {/* Price Range Filter */}
-        <div className="pb-6 border-b border-gray-100">
-          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 mb-4">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#019dff] flex items-center justify-center shadow-sm">
-              <span className="text-lg sm:text-xl font-bold text-white">฿</span>
+        <div className="pb-5 border-b border-gray-100">
+          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-600 mb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white flex items-center justify-center">
+              <span className="text-lg sm:text-xl font-bold text-gray-600">฿</span>
             </div>
             <span>ช่วงราคา (บาท)</span>
           </label>
@@ -195,7 +205,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         )}
                       </div>
                     </div>
-                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
+                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-normal transition-colors truncate">
                       {range.label}
                     </span>
                   </div>
@@ -207,10 +217,10 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
         </div>
 
         {/* Duration Filter */}
-        <div className="pb-6 border-b border-gray-100">
-          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 mb-4">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#019dff] flex items-center justify-center shadow-sm">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="pb-5 border-b border-gray-100">
+          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-600 mb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white flex items-center justify-center">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -242,7 +252,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         )}
                       </div>
                     </div>
-                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
+                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-normal transition-colors truncate">
                       {duration.label}
                     </span>
                   </div>
@@ -254,10 +264,10 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
         </div>
 
         {/* Airline Filter */}
-        <div className="pb-6 border-b border-gray-100">
-          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 mb-4">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#019dff] flex items-center justify-center shadow-sm">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
+        <div className="pb-5 border-b border-gray-100">
+          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-600 mb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white flex items-center justify-center">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/>
               </svg>
             </div>
@@ -305,7 +315,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                         )}
                       </div>
                     </div>
-                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors truncate">
+                    <span className="ml-3 text-sm text-gray-700 group-hover:text-gray-900 font-normal transition-colors truncate">
                       {airline.label}
                     </span>
                   </div>
@@ -319,7 +329,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
           {filteredAirlines.filter(a => (filterCounts.airlines[a.value] || 0) > 0).length > 5 && (
             <button
               onClick={() => setShowAllAirlines(!showAllAirlines)}
-              className="mt-4 ml-1 text-sm text-[#019dff] hover:text-[#0187e6] font-medium flex items-center gap-1.5 transition-colors"
+              className="mt-4 ml-1 text-sm text-[#019dff] hover:text-[#0187e6] font-normal flex items-center gap-1.5 transition-colors"
             >
               <span>{showAllAirlines ? 'แสดงสายการบินน้อยลง' : 'แสดงสายการบินทั้งหมด'}</span>
               <svg 
@@ -336,9 +346,9 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
 
         {/* Hotel Stars Filter */}
         <div>
-          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-900 mb-4">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-[#019dff] flex items-center justify-center shadow-sm">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+          <label className="flex items-center gap-2.5 text-sm font-semibold text-gray-600 mb-4">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-white flex items-center justify-center">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
               </svg>
             </div>
@@ -371,7 +381,7 @@ export default function FilterSidebar({ filters, onFilterChange, onReset, active
                       </div>
                     </div>
                     <span className="ml-3 flex items-center gap-1.5">
-                      <span className="text-sm text-gray-700 group-hover:text-gray-900 font-medium transition-colors">{stars} ดาว</span>
+                      <span className="text-sm text-gray-700 group-hover:text-gray-900 font-normal transition-colors">{stars} ดาว</span>
                       <div className="flex">
                         {[...Array(stars)].map((_, i) => (
                           <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
