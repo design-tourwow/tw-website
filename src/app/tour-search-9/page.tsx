@@ -122,6 +122,8 @@ export default function TourSearchPage() {
   })
   
   const [selectedSearchTags, setSelectedSearchTags] = useState<string[]>([])
+  const [pendingSearchQuery, setPendingSearchQuery] = useState('')
+  const [pendingSearchTags, setPendingSearchTags] = useState<string[]>([])
   
   const [sortBy, setSortBy] = useState('popular')
   
@@ -158,6 +160,15 @@ export default function TourSearchPage() {
       durations: [],
       airlines: []
     })
+    setPendingSearchQuery('')
+    setPendingSearchTags([])
+    setSelectedSearchTags([])
+  }
+
+  const handleSearch = (query: string, tags: string[]) => {
+    // Combine query and tags for search
+    const combinedQuery = [query, ...tags].filter(Boolean).join(' ')
+    setFilters(prev => ({ ...prev, searchQuery: combinedQuery }))
   }
   
   const activeFilterCount = [
@@ -240,10 +251,11 @@ export default function TourSearchPage() {
       <div className="lg:hidden">
         <div className="sticky top-16 z-40 bg-white border-b border-gray-200 shadow-sm px-4 py-2">
           <SearchBarWithSuggestions 
-            value={filters.searchQuery}
-            onChange={(value) => handleFilterChange('searchQuery', value)}
-            selectedTags={selectedSearchTags}
-            onTagsChange={setSelectedSearchTags}
+            value={pendingSearchQuery}
+            onChange={setPendingSearchQuery}
+            selectedTags={pendingSearchTags}
+            onTagsChange={setPendingSearchTags}
+            onSearch={handleSearch}
           />
           <button
             onClick={() => setIsMobileFilterOpen(true)}
@@ -265,10 +277,11 @@ export default function TourSearchPage() {
         <div className="hidden lg:block my-6">
           <div className="max-w-full mx-auto">
             <SearchBarWithSuggestions 
-              value={filters.searchQuery}
-              onChange={(value) => handleFilterChange('searchQuery', value)}
-              selectedTags={selectedSearchTags}
-              onTagsChange={setSelectedSearchTags}
+              value={pendingSearchQuery}
+              onChange={setPendingSearchQuery}
+              selectedTags={pendingSearchTags}
+              onTagsChange={setPendingSearchTags}
+              onSearch={handleSearch}
             />
           </div>
         </div>
