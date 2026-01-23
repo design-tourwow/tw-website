@@ -52,6 +52,7 @@ const promotions: PromotionItem[] = [
 export default function HotPromotionBanner() {
   const [currentIndex, setCurrentIndex] = useState(0)
 
+  // Banner auto-slide
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => 

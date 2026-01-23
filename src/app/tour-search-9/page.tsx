@@ -291,95 +291,24 @@ export default function TourSearchPage() {
         <PopularDestinations />
       </div>
 
-      {/* Sticky Mobile Search & Filter Bar */}
+      {/* Sticky Mobile Search Bar Only */}
       {isSticky && (
-        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white shadow-md border-b border-gray-200">
-          <div className="container mx-auto px-4 py-3" style={{ maxWidth: '1200px' }}>
-            {/* Mobile Search Bar */}
-            <div className="mb-3">
-              <SearchBarWithSuggestions 
-                value={pendingSearchQuery}
-                onChange={setPendingSearchQuery}
-                selectedTags={pendingSearchTags}
-                onTagsChange={setPendingSearchTags}
-                onSearch={handleSearch}
-              />
-            </div>
-            
-            {/* Mobile Filter & Sort Buttons */}
-            <div className="flex justify-center">
-              <div className="relative w-4/5">
-                <div className="flex items-center rounded-lg overflow-hidden shadow-sm border border-gray-200">
-                  {/* Filter Button - 50% width */}
-                  <button
-                    onClick={() => setIsMobileFilterOpen(true)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border-r border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    <span className="text-sm">ตัวกรอง</span>
-                    {activeFilterCount > 0 && (
-                      <span className="bg-[#019dff] text-white text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
-                        {activeFilterCount}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Sort Button - 50% width */}
-                  <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all"
-                  >
-                    <span className="text-sm">เรียงตาม</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-                    </svg>
-                  </button>
-                </div>
-
-                {/* Sort Dropdown Menu */}
-                {isOpen && (
-                  <>
-                    <div 
-                      className="fixed inset-0 z-40" 
-                      onClick={() => setIsOpen(false)}
-                    />
-                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
-                      <div className="py-2">
-                        {[
-                          { value: 'popular', label: 'ความนิยม' },
-                          { value: 'price-low', label: 'ราคา: ต่ำ → สูง' },
-                          { value: 'price-high', label: 'ราคา: สูง → ต่ำ' },
-                          { value: 'duration-short', label: 'ระยะเวลา: สั้น → ยาว' },
-                          { value: 'duration-long', label: 'ระยะเวลา: ยาว → สั้น' },
-                          { value: 'newest', label: 'ใหม่ล่าสุด' }
-                        ].map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => {
-                              setSortBy(option.value as any)
-                              setIsOpen(false)
-                            }}
-                            className={`w-full text-left px-4 py-3 text-sm hover:bg-[#e6f7ff] transition-colors ${
-                              sortBy === option.value ? 'bg-[#e6f7ff] text-[#019dff] font-medium' : 'text-gray-700'
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
+        <div className="lg:hidden fixed top-16 left-0 right-0 z-40 pt-0.5">
+          <div className="container mx-auto px-4" style={{ maxWidth: '1200px' }}>
+            {/* Mobile Search Bar Only */}
+            <SearchBarWithSuggestions 
+              value={pendingSearchQuery}
+              onChange={setPendingSearchQuery}
+              selectedTags={pendingSearchTags}
+              onTagsChange={setPendingSearchTags}
+              onSearch={handleSearch}
+            />
           </div>
         </div>
       )}
 
       {/* Main Content */}
-      <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 ${isSticky ? 'lg:mt-0 mt-32' : ''}`} style={{ maxWidth: '1200px' }}>
+      <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 ${isSticky ? 'lg:mt-0 mt-20' : ''}`} style={{ maxWidth: '1200px' }}>
         <div className="flex gap-6">
           {/* Sidebar - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
