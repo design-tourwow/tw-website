@@ -26,6 +26,8 @@ export default function TourCard({ tour, cardId }: TourCardProps) {
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            {/* Brightness overlay on hover */}
+            <div className="absolute inset-0 bg-white/0 hover:bg-white/10 transition-all duration-500 ease-out"></div>
           </div>
 
           {/* Flight Info */}

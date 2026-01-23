@@ -13,6 +13,7 @@ import SEOContent from '@/components/tour-search-9/SEOContent'
 import SearchBarWithSuggestions from '@/components/tour-search-9/SearchBarWithSuggestions'
 import AdvancedFilterModal from '@/components/tour-search-9/AdvancedFilterModal'
 import AnimatedTitle from '@/components/tour-search-9/AnimatedTitle'
+import HotPromotionBanner from '@/components/tour-search-9/HotPromotionBanner'
 
 export default function TourSearchPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -20,6 +21,7 @@ export default function TourSearchPage() {
   const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [showGoToTop, setShowGoToTop] = useState(false)
+  const [isSticky, setIsSticky] = useState(false)
   
   const sortOptions = [
     { 
@@ -93,14 +95,26 @@ export default function TourSearchPage() {
     }
   }, [isMobileFilterOpen])
   
-  // Detect scroll for "Go to Top" button
+  // Detect scroll for "Go to Top" button and sticky behavior
   useEffect(() => {
     const handleScroll = () => {
       // Show button when scrolled down 300px
       setShowGoToTop(window.scrollY > 300)
+      
+      // Mobile sticky behavior - check if scrolled past search and filter area
+      const searchSection = document.querySelector('.search-filter-section')
+      if (searchSection && window.innerWidth < 1024) { // Only on mobile/tablet
+        const rect = searchSection.getBoundingClientRect()
+        setIsSticky(rect.bottom <= 0)
+      }
     }
+    
     window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('resize', handleScroll) // Also check on resize
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+    }
   }, [])
   
   // Scroll to top function
@@ -245,7 +259,7 @@ export default function TourSearchPage() {
       </section>
 
       {/* Breadcrumb & Search & Popular Destinations */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 search-filter-section" style={{ maxWidth: '1200px' }}>
         <Breadcrumb />
         
         {/* Mobile Search Bar - Below Breadcrumb */}
@@ -277,11 +291,103 @@ export default function TourSearchPage() {
         <PopularDestinations />
       </div>
 
+      {/* Sticky Mobile Search & Filter Bar */}
+      {isSticky && (
+        <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white shadow-md border-b border-gray-200">
+          <div className="container mx-auto px-4 py-3" style={{ maxWidth: '1200px' }}>
+            {/* Mobile Search Bar */}
+            <div className="mb-3">
+              <SearchBarWithSuggestions 
+                value={pendingSearchQuery}
+                onChange={setPendingSearchQuery}
+                selectedTags={pendingSearchTags}
+                onTagsChange={setPendingSearchTags}
+                onSearch={handleSearch}
+              />
+            </div>
+            
+            {/* Mobile Filter & Sort Buttons */}
+            <div className="flex justify-center">
+              <div className="relative w-4/5">
+                <div className="flex items-center rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                  {/* Filter Button - 50% width */}
+                  <button
+                    onClick={() => setIsMobileFilterOpen(true)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white border-r border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-all"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                    <span className="text-sm">ตัวกรอง</span>
+                    {activeFilterCount > 0 && (
+                      <span className="bg-[#019dff] text-white text-xs px-2 py-0.5 rounded-full font-bold min-w-[20px] text-center">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {/* Sort Button - 50% width */}
+                  <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-all"
+                  >
+                    <span className="text-sm">เรียงตาม</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Sort Dropdown Menu */}
+                {isOpen && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setIsOpen(false)}
+                    />
+                    <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 overflow-hidden">
+                      <div className="py-2">
+                        {[
+                          { value: 'popular', label: 'ความนิยม' },
+                          { value: 'price-low', label: 'ราคา: ต่ำ → สูง' },
+                          { value: 'price-high', label: 'ราคา: สูง → ต่ำ' },
+                          { value: 'duration-short', label: 'ระยะเวลา: สั้น → ยาว' },
+                          { value: 'duration-long', label: 'ระยะเวลา: ยาว → สั้น' },
+                          { value: 'newest', label: 'ใหม่ล่าสุด' }
+                        ].map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => {
+                              setSortBy(option.value as any)
+                              setIsOpen(false)
+                            }}
+                            className={`w-full text-left px-4 py-3 text-sm hover:bg-[#e6f7ff] transition-colors ${
+                              sortBy === option.value ? 'bg-[#e6f7ff] text-[#019dff] font-medium' : 'text-gray-700'
+                            }`}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6" style={{ maxWidth: '1200px' }}>
+      <div className={`container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 ${isSticky ? 'lg:mt-0 mt-32' : ''}`} style={{ maxWidth: '1200px' }}>
         <div className="flex gap-6">
           {/* Sidebar - Desktop */}
           <aside className="hidden lg:block w-64 flex-shrink-0">
+            {/* Hot Promotion Banner - Start at same level as Tour Grid */}
+            <div className="mt-24 sm:mt-28 mb-6">
+              <HotPromotionBanner />
+            </div>
+            
             <FilterSidebar
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -409,11 +515,19 @@ export default function TourSearchPage() {
                   gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 412px), 1fr))'
                 }}
               >
-                {filteredTours.map((tour) => (
-                  <div key={tour.id} className="relative overflow-hidden rounded-xl sm:rounded-2xl">
-                    <TourCard 
-                      tour={tour}
-                    />
+                {filteredTours.map((tour, index) => (
+                  <div key={tour.id}>
+                    {/* Tour Card */}
+                    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl">
+                      <TourCard tour={tour} />
+                    </div>
+                    
+                    {/* Hot Promotion Banner after 3rd card in mobile only */}
+                    {index === 2 && (
+                      <div className="lg:hidden mt-4 sm:mt-6">
+                        <HotPromotionBanner />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
