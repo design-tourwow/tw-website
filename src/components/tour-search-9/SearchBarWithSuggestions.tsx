@@ -282,34 +282,83 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
               </svg>
             )}
             
-            <div className="w-full pl-11 pr-24 px-2 min-h-[48px] border-2 border-transparent rounded-lg transition-colors flex flex-wrap items-center gap-1.5">
-              {/* Selected Tags */}
-              {selectedTags.map((tag, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    // Do nothing when clicking on tag name
-                  }}
-                  className="flex-shrink-0 inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-[#019dff] hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm focus:outline-none"
-                >
-                  {tag}
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleRemoveTag(tag)
+            <div className="w-full pl-11 pr-24 px-2 min-h-[48px] border-2 border-transparent rounded-lg transition-colors flex items-center gap-1.5">
+              {/* Selected Tags Container with Horizontal Scroll */}
+              {selectedTags.length > 0 && (
+                <div className="flex items-center gap-1 flex-shrink-0 h-[48px]">
+                  {/* Left Scroll Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const container = document.getElementById('tags-container')
+                      if (container) {
+                        container.scrollBy({ left: -100, behavior: 'smooth' })
+                      }
                     }}
-                    className="hover:opacity-60 transition-opacity cursor-pointer flex items-center justify-center"
-                    role="button"
-                    aria-label={`ลบ ${tag}`}
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors opacity-70 hover:opacity-100"
+                    aria-label="เลื่อนซ้าย"
                   >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M18 6L6 18M6 6l12 12" />
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M15 18l-6-6 6-6" />
                     </svg>
-                  </span>
-                </button>
-              ))}
+                  </button>
+                  
+                  {/* Tags Scrollable Container - Fixed Height, Single Line */}
+                  <div 
+                    id="tags-container"
+                    className="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide h-[48px] max-w-[200px] sm:max-w-[300px] lg:max-w-[400px]"
+                    style={{ 
+                      scrollbarWidth: 'none', 
+                      msOverflowStyle: 'none',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {selectedTags.map((tag, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          // Do nothing when clicking on tag name
+                        }}
+                        className="flex-shrink-0 inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-[#019dff] hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm focus:outline-none h-8"
+                      >
+                        {tag}
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleRemoveTag(tag)
+                          }}
+                          className="hover:opacity-60 transition-opacity cursor-pointer flex items-center justify-center"
+                          role="button"
+                          aria-label={`ลบ ${tag}`}
+                        >
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                          </svg>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Right Scroll Button */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const container = document.getElementById('tags-container')
+                      if (container) {
+                        container.scrollBy({ left: 100, behavior: 'smooth' })
+                      }
+                    }}
+                    className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors opacity-70 hover:opacity-100"
+                    aria-label="เลื่อนขวา"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 18l6-6-6-6" />
+                    </svg>
+                  </button>
+                </div>
+              )}
               
               {/* Input */}
               <input 
