@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import { tourDatabase, filterAndSortTours, calculateFilterCounts } from '@/lib/tour-data-search'
 import TourCard from '@/components/tour-search-9/TourCard'
 import FilterSidebar from '@/components/tour-search-9/FilterSidebar'
@@ -16,7 +17,85 @@ import AnimatedTitle from '@/components/tour-search-9/AnimatedTitle'
 import HotPromotionBanner from '@/components/tour-search-9/HotPromotionBanner'
 import PopularTagsBar from '@/components/tour-search-9/PopularTagsBar'
 
-export default function TourSearchPage() {
+// Destination mapping
+const destinationMap: Record<string, { title: string; searchQuery: string; bgImage: string }> = {
+  'tokyo': {
+    title: 'ทัวร์ญี่ปุ่น โตเกียว',
+    searchQuery: 'โตเกียว Tokyo',
+    bgImage: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'osaka': {
+    title: 'ทัวร์ญี่ปุ่น โอซาก้า',
+    searchQuery: 'โอซาก้า Osaka',
+    bgImage: 'https://images.unsplash.com/photo-1590559899731-a382839e5549?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'kyoto': {
+    title: 'ทัวร์ญี่ปุ่น เกียวโต',
+    searchQuery: 'เกียวโต Kyoto',
+    bgImage: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'hokkaido': {
+    title: 'ทัวร์ญี่ปุ่น ฮอกไกโด',
+    searchQuery: 'ฮอกไกโด Hokkaido',
+    bgImage: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'fuji': {
+    title: 'ทัวร์ญี่ปุ่น ฟูจิ',
+    searchQuery: 'ฟูจิ Fuji',
+    bgImage: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'nagoya': {
+    title: 'ทัวร์ญี่ปุ่น นาโกย่า',
+    searchQuery: 'นาโกย่า Nagoya',
+    bgImage: 'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'hiroshima': {
+    title: 'ทัวร์ญี่ปุ่น ฮิโรชิม่า',
+    searchQuery: 'ฮิโรชิม่า Hiroshima',
+    bgImage: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'nikko': {
+    title: 'ทัวร์ญี่ปุ่น นิกโก้',
+    searchQuery: 'นิกโก้ Nikko',
+    bgImage: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'kamakura': {
+    title: 'ทัวร์ญี่ปุ่น คามาคุระ',
+    searchQuery: 'คามาคุระ Kamakura',
+    bgImage: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'takayama': {
+    title: 'ทัวร์ญี่ปุ่น ทาคายาม่า',
+    searchQuery: 'ทาคายาม่า Takayama',
+    bgImage: 'https://images.unsplash.com/photo-1480796927426-f609979314bd?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'kanazawa': {
+    title: 'ทัวร์ญี่ปุ่น คานาซาว่า',
+    searchQuery: 'คานาซาว่า Kanazawa',
+    bgImage: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=2048&h=1024&fit=crop&auto=format&q=90'
+  },
+  'sendai': {
+    title: 'ทัวร์ญี่ปุ่น เซนได',
+    searchQuery: 'เซนได Sendai',
+    bgImage: 'https://images.unsplash.com/photo-1542640244-7e672d6cef4e?w=2048&h=1024&fit=crop&auto=format&q=90'
+  }
+}
+
+export default function DestinationPage() {
+  const params = useParams()
+  const router = useRouter()
+  const destination = params.destination as string
+  
+  // Get destination info or redirect if not found
+  const destinationInfo = destinationMap[destination]
+  
+  useEffect(() => {
+    if (!destinationInfo) {
+      router.push('/tour-search-9')
+      return
+    }
+  }, [destination, destinationInfo, router])
+
   const [isLoading, setIsLoading] = useState(true)
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false)
   const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false)
@@ -123,14 +202,14 @@ export default function TourSearchPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   
-  // Filter states
+  // Filter states - Initialize with destination search query
   const [filters, setFilters] = useState({
     region: 'all',
     priceRange: 'all',
     duration: 'all',
     airline: 'all',
     rating: 0,
-    searchQuery: '',
+    searchQuery: destinationInfo?.searchQuery || '',
     holidays: [] as string[],
     priceRanges: [] as string[],
     durations: [] as string[],
@@ -140,6 +219,13 @@ export default function TourSearchPage() {
   const [pendingSearchQuery, setPendingSearchQuery] = useState('')
   
   const [sortBy, setSortBy] = useState('popular')
+  
+  // Update filters when destination changes
+  useEffect(() => {
+    if (destinationInfo) {
+      setFilters(prev => ({ ...prev, searchQuery: destinationInfo.searchQuery }))
+    }
+  }, [destinationInfo])
   
   // Simulate loading
   useEffect(() => {
@@ -168,7 +254,7 @@ export default function TourSearchPage() {
       duration: 'all',
       airline: 'all',
       rating: 0,
-      searchQuery: '',
+      searchQuery: destinationInfo?.searchQuery || '',
       holidays: [],
       priceRanges: [],
       durations: [],
@@ -178,7 +264,10 @@ export default function TourSearchPage() {
   }
 
   const handleSearch = (query: string) => {
-    setFilters(prev => ({ ...prev, searchQuery: query }))
+    // Combine destination query and user query for search
+    const baseQuery = destinationInfo?.searchQuery || ''
+    const combinedQuery = [baseQuery, query].filter(Boolean).join(' ')
+    setFilters(prev => ({ ...prev, searchQuery: combinedQuery }))
   }
   
   const activeFilterCount = [
@@ -187,8 +276,14 @@ export default function TourSearchPage() {
     ...filters.durations,
     ...filters.airlines,
     filters.rating !== 0 ? filters.rating : null,
-    filters.searchQuery
+    // Don't count the base destination query as an active filter
+    filters.searchQuery !== (destinationInfo?.searchQuery || '') ? filters.searchQuery : null
   ].filter(Boolean).length
+
+  // Don't render if destination not found
+  if (!destinationInfo) {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -237,7 +332,7 @@ export default function TourSearchPage() {
         <div 
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=2048&h=1024&fit=crop&auto=format&q=90)',
+            backgroundImage: `url(${destinationInfo.bgImage})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -249,13 +344,13 @@ export default function TourSearchPage() {
         <div className="mx-auto relative z-10" style={{ maxWidth: '1200px' }}>
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-              <AnimatedTitle text="ทัวร์ญี่ปุ่น" />
+              <AnimatedTitle text={destinationInfo.title} />
             </h1>
           </div>
         </div>
       </section>
 
-      {/* Breadcrumb & Search & Popular Destinations */}
+      {/* Breadcrumb & Search & Popular Tags */}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 search-filter-section" style={{ maxWidth: '1200px' }}>
         <Breadcrumb />
         
@@ -331,7 +426,7 @@ export default function TourSearchPage() {
                 {/* Desktop: Results Count */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm sm:text-base text-gray-600">พบ</span>
-                  <span className="font-bold text-[#019dff] text-lg sm:text-xl">ทัวร์ญี่ปุ่น</span>
+                  <span className="font-bold text-[#019dff] text-lg sm:text-xl">{destinationInfo.title}</span>
                   <span className="text-sm sm:text-base text-gray-600">({filteredTours.length} โปรแกรม)</span>
                 </div>
 
@@ -346,7 +441,7 @@ export default function TourSearchPage() {
                 {/* Mobile: Results Count (Left Aligned) */}
                 <div className="flex items-center gap-2 flex-1">
                   <span className="text-sm text-gray-600">พบ</span>
-                  <span className="font-bold text-[#019dff] text-base">ทัวร์ญี่ปุ่น</span>
+                  <span className="font-bold text-[#019dff] text-base">{destinationInfo.title}</span>
                   <span className="text-sm text-gray-600">{filteredTours.length} โปรแกรม</span>
                 </div>
 

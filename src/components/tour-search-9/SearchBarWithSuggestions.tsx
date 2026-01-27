@@ -6,17 +6,14 @@ import { tourDatabase, type TourData } from '@/lib/tour-data-search'
 interface SearchBarWithSuggestionsProps {
   value: string
   onChange: (value: string) => void
-  selectedTags?: string[]
-  onTagsChange?: (tags: string[]) => void
-  onSearch?: (query: string, tags: string[]) => void
+  onSearch?: (query: string) => void
 }
 
-export default function SearchBarWithSuggestions({ value, onChange, selectedTags = [], onTagsChange, onSearch }: SearchBarWithSuggestionsProps) {
+export default function SearchBarWithSuggestions({ value, onChange, onSearch }: SearchBarWithSuggestionsProps) {
   const [isFocused, setIsFocused] = useState(false)
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [tourSuggestions, setTourSuggestions] = useState<TourData[]>([])
   const [isTyping, setIsTyping] = useState(false)
-  const [searchType, setSearchType] = useState<'tag' | 'program' | 'default'>('default') // Track search type
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -42,51 +39,11 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
     typeNextChar()
   }
 
-  // All available keywords/tags
-  const allKeywords = [
-    'โตเกียว',
-    'โอซาก้า',
-    'เกียวโต',
-    'ฟูจิ',
-    'ฮอกไกโด',
-    'ซัปโปโร',
-    'นาโกย่า',
-    'ฮิโรชิม่า',
-    'นารา',
-    'คานาซาว่า',
-    'ทาคายาม่า',
-    'ชิราคาวาโกะ',
-    'ดิสนีย์',
-    'ภูเขาไฟฟูจิ',
-    'ออนเซ็น',
-    'ซากุระ',
-    'ใบไม้เปลี่ยนสี',
-    'หิมะ',
-    '5 วัน',
-    '6 วัน',
-    '7 วัน',
-    'ราคาถูก',
-    'หรูหรา',
-    'ครอบครัว',
-    'ฮันนีมูน'
-  ]
-
-  // Update search type based on current state
-  useEffect(() => {
-    if (selectedTags.length > 0) {
-      setSearchType('tag')
-    } else if (value.length > 0) {
-      setSearchType('program')
-    } else {
-      setSearchType('default')
-    }
-  }, [selectedTags, value])
-
   // Filter suggestions based on input
   useEffect(() => {
     if (isFocused) {
       if (value.length >= 3) {
-        // When typing 3+ characters, show tour name suggestions (not tags)
+        // When typing 3+ characters, show tour name suggestions
         const query = value.toLowerCase()
         const matchedTours = tourDatabase.filter(tour => {
           // Match against tour title
@@ -101,13 +58,9 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
         }) // Show all matched tours (no limit)
         
         setTourSuggestions(matchedTours)
-        setSuggestions([]) // Clear tag suggestions when typing
-      } else if (value.length === 0) {
-        // Show popular keyword tags when input is empty (regardless of selected tags)
-        const available = allKeywords.filter(keyword => !selectedTags.includes(keyword))
-        setSuggestions(available)
-        setTourSuggestions([])
+        setSuggestions([]) // No tag suggestions
       } else {
+        // Don't show any tag suggestions when input is empty
         setSuggestions([])
         setTourSuggestions([])
       }
@@ -115,7 +68,7 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
       setSuggestions([])
       setTourSuggestions([])
     }
-  }, [value, isFocused, selectedTags])
+  }, [value, isFocused])
 
   // Cleanup typing timeout on unmount
   useEffect(() => {
@@ -139,53 +92,25 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
   }, [])
 
   const handleSuggestionClick = (keyword: string) => {
-    if (!onTagsChange) return
-    
-    // Add tag (no toggle, just add)
-    if (!selectedTags.includes(keyword)) {
-      onTagsChange([...selectedTags, keyword])
-      setSearchType('tag') // Set type to tag
-    }
-    // Clear input when selecting a tag
-    onChange('')
-    // Don't close dropdown, keep it open for multi-select
+    // Set the keyword as search value
+    onChange(keyword)
+    setIsFocused(false)
   }
 
   const handleTourSuggestionClick = (tour: TourData) => {
-    // When clicking a tour suggestion, CLEAR ALL TAGS and use keyword instead
-    if (onTagsChange) {
-      onTagsChange([]) // Clear all tags
-    }
-    onChange(tour.title) // Set tour title as keyword
-    setSearchType('program') // Set type to program
+    // When clicking a tour suggestion, set tour title as search value
+    onChange(tour.title)
     setIsFocused(false)
     inputRef.current?.blur()
   }
 
   const handleSearchClick = () => {
-    // Trigger search with current query and tags
-    // Tags and Keyword are mutually exclusive
+    // Trigger search with current query
     if (onSearch) {
-      if (selectedTags.length > 0) {
-        // Search with tags only
-        onSearch('', selectedTags)
-      } else {
-        // Search with keyword only
-        onSearch(value, [])
-      }
+      onSearch(value)
     }
     setIsFocused(false)
     inputRef.current?.blur()
-  }
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    if (!onTagsChange) return
-    const newTags = selectedTags.filter(tag => tag !== tagToRemove)
-    onTagsChange(newTags)
-    // Reset search type if no tags left
-    if (newTags.length === 0) {
-      setSearchType('default')
-    }
   }
 
   const handleVoiceSearch = () => {
@@ -227,144 +152,29 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-1.5">
         <div className="flex gap-2">
           <div className="flex-1 relative">
-            {/* Dynamic Icon based on search type */}
-            {searchType === 'tag' ? (
-              // Tag Icon
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="absolute left-3 top-3 text-[#019dff] w-5 h-5 z-10"
-              >
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                <line x1="7" y1="7" x2="7.01" y2="7"></line>
-              </svg>
-            ) : searchType === 'program' ? (
-              // Globe/World Icon for Tour Program
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="absolute left-3 top-3 text-[#019dff] w-5 h-5 z-10"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              </svg>
-            ) : (
-              // Default Map Pin Icon (Location/Travel)
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="absolute left-3 top-3 text-gray-400 w-5 h-5 z-10"
-              >
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-            )}
+            {/* Location Pin Icon - Always visible with theme blue color */}
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              width="20" 
+              height="20" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              className="absolute left-3 top-3 text-[#019dff] w-5 h-5 z-10"
+            >
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
             
             <div className="w-full pl-11 pr-24 px-2 min-h-[48px] border-2 border-transparent rounded-lg transition-colors flex items-center gap-1.5">
-              {/* Selected Tags Container with Horizontal Scroll */}
-              {selectedTags.length > 0 && (
-                <div className="flex items-center gap-1 flex-shrink-0 h-[48px]">
-                  {/* Left Scroll Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const container = document.getElementById('tags-container')
-                      if (container) {
-                        container.scrollBy({ left: -100, behavior: 'smooth' })
-                      }
-                    }}
-                    className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors opacity-70 hover:opacity-100"
-                    aria-label="เลื่อนซ้าย"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M15 18l-6-6 6-6" />
-                    </svg>
-                  </button>
-                  
-                  {/* Tags Scrollable Container - Fixed Height, Single Line */}
-                  <div 
-                    id="tags-container"
-                    className="flex items-center gap-1.5 overflow-x-auto overflow-y-hidden scrollbar-hide h-[48px] max-w-[200px] sm:max-w-[300px] lg:max-w-[400px]"
-                    style={{ 
-                      scrollbarWidth: 'none', 
-                      msOverflowStyle: 'none',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {selectedTags.map((tag, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          // Do nothing when clicking on tag name
-                        }}
-                        className="flex-shrink-0 inline-flex items-center justify-center gap-1 px-3 py-1 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-[#019dff] hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm focus:outline-none h-8"
-                      >
-                        {tag}
-                        <span
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleRemoveTag(tag)
-                          }}
-                          className="hover:opacity-60 transition-opacity cursor-pointer flex items-center justify-center"
-                          role="button"
-                          aria-label={`ลบ ${tag}`}
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {/* Right Scroll Button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const container = document.getElementById('tags-container')
-                      if (container) {
-                        container.scrollBy({ left: 100, behavior: 'smooth' })
-                      }
-                    }}
-                    className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors opacity-70 hover:opacity-100"
-                    aria-label="เลื่อนขวา"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M9 18l6-6-6-6" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-              
               {/* Input */}
               <input 
                 ref={inputRef}
                 type="text" 
-                placeholder={selectedTags.length === 0 ? "ไปเที่ยวไหนดี? พิมพ์ชื่อจุดหมายที่อยากไป" : ""}
+                placeholder="ไปเที่ยวไหนดี? พิมพ์ชื่อจุดหมายที่อยากไป"
                 className="flex-1 min-w-[120px] outline-none text-base text-gray-900 bg-transparent" 
                 aria-label="ค้นหาทัวร์"
                 value={value}
@@ -377,10 +187,9 @@ export default function SearchBarWithSuggestions({ value, onChange, selectedTags
                   onChange(e.target.value)
                 }}
                 onKeyDown={(e) => {
-                  // Delete last tag when pressing Backspace on empty input
-                  if (e.key === 'Backspace' && value === '' && selectedTags.length > 0) {
+                  if (e.key === 'Enter') {
                     e.preventDefault()
-                    handleRemoveTag(selectedTags[selectedTags.length - 1])
+                    handleSearchClick()
                   }
                 }}
                 onFocus={() => setIsFocused(true)}

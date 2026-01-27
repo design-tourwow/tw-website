@@ -72,7 +72,7 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
     <div className="relative w-full lg:w-auto" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full lg:w-auto lg:min-w-[180px] h-[44px] flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 bg-white border border-gray-300 rounded-lg hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#e6f7ff]0 focus:border-transparent text-sm font-medium text-gray-700"
+        className="w-full lg:w-auto lg:min-w-[160px] h-[44px] flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 bg-white border border-gray-300 rounded-lg hover:border-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-[#e6f7ff]0 focus:border-transparent text-sm font-medium text-gray-700"
       >
         <span className="text-gray-600 flex-shrink-0">{selectedOption.icon}</span>
         <span className="flex-1 text-left truncate">{selectedOption.label}</span>
@@ -87,7 +87,7 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-full bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-full lg:w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-1 z-50 overflow-hidden">
           {sortOptions.map((option) => (
             <button
               key={option.value}

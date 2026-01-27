@@ -2,7 +2,7 @@
 
 export default function PopularDestinations() {
   return (
-    <section className="mt-2 mb-4 sm:mb-6">
+    <>
       {/* Image Cards - Hidden for now */}
       {/* <div className="flex gap-3 overflow-x-auto pb-2 pr-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
         {destinations.map((destination) => (
@@ -30,8 +30,6 @@ export default function PopularDestinations() {
           </Link>
         ))}
       </div> */}
-
-
-    </section>
+    </>
   )
 }
