@@ -186,8 +186,7 @@ export default function TourSearchPage() {
     ...filters.priceRanges,
     ...filters.durations,
     ...filters.airlines,
-    filters.rating !== 0 ? filters.rating : null,
-    filters.searchQuery
+    filters.rating !== 0 ? filters.rating : null
   ].filter(Boolean).length
 
   return (

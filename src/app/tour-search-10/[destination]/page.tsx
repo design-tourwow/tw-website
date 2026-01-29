@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { tourDatabase, filterAndSortTours, calculateFilterCounts } from '@/lib/tour-data-search'
 import TourCard from '@/components/tour-search-10/TourCard'
 import FilterSidebar from '@/components/tour-search-10/FilterSidebar'
@@ -91,7 +92,7 @@ export default function DestinationPage() {
   
   useEffect(() => {
     if (!destinationInfo) {
-      router.push('/tour-search-9')
+      router.push('/tour-search-10')
       return
     }
   }, [destination, destinationInfo, router])
@@ -275,9 +276,7 @@ export default function DestinationPage() {
     ...filters.priceRanges,
     ...filters.durations,
     ...filters.airlines,
-    filters.rating !== 0 ? filters.rating : null,
-    // Don't count the base destination query as an active filter
-    filters.searchQuery !== (destinationInfo?.searchQuery || '') ? filters.searchQuery : null
+    filters.rating !== 0 ? filters.rating : null
   ].filter(Boolean).length
 
   // Don't render if destination not found
@@ -649,6 +648,28 @@ export default function DestinationPage() {
         resultsCount={filteredTours.length}
       />
 
+      {/* Floating Back to Main Button */}
+      <Link
+        href="/tour-search-10"
+        className="fixed bottom-6 left-6 z-40 px-4 py-3 bg-white border-2 border-[#019dff] text-[#019dff] rounded-full shadow-lg hover:bg-[#e6f7ff] transition-all flex items-center gap-2 font-medium hover:scale-105"
+        aria-label="กลับไปหน้าค้นหาทัวร์"
+      >
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
+        </svg>
+        <span className="text-sm">ทัวร์ทั้งหมด</span>
+      </Link>
+
       {/* Go to Top Button */}
       {showGoToTop && (
         <button
@@ -656,10 +677,10 @@ export default function DestinationPage() {
           className="fixed bottom-6 right-6 z-40 w-12 h-12 bg-gradient-to-r from-[#019dff] to-[#0187e6] text-white rounded-full shadow-lg hover:from-[#0187e6] hover:to-blue-800 transition-all flex items-center justify-center group hover:scale-110"
           aria-label="กลับไปด้านบน"
         >
-          <svg 
-            className="w-6 h-6 transform group-hover:-translate-y-0.5 transition-transform" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            className="w-6 h-6 transform group-hover:-translate-y-0.5 transition-transform"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />

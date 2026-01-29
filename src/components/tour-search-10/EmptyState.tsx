@@ -1,8 +1,33 @@
+'use client'
+
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+
+// Destination mapping for Thai names
+const destinationNames: Record<string, string> = {
+  'tokyo': 'โตเกียว',
+  'osaka': 'โอซาก้า',
+  'kyoto': 'เกียวโต',
+  'hokkaido': 'ฮอกไกโด',
+  'fuji': 'ฟูจิ',
+  'nagoya': 'นาโกย่า',
+  'hiroshima': 'ฮิโรชิม่า',
+  'nikko': 'นิกโก้',
+  'kamakura': 'คามาคุระ',
+  'takayama': 'ทาคายาม่า',
+  'kanazawa': 'คานาซาว่า',
+  'sendai': 'เซนได'
+}
+
 interface EmptyStateProps {
   onReset: () => void
 }
 
 export default function EmptyState({ onReset }: EmptyStateProps) {
+  const params = useParams()
+  const destination = params?.destination as string | undefined
+  const destinationName = destination ? destinationNames[destination] : null
+
   return (
     <div className="text-center py-16 px-4">
       <div className="max-w-md mx-auto">
@@ -31,20 +56,22 @@ export default function EmptyState({ onReset }: EmptyStateProps) {
           ลองปรับเปลี่ยนตัวกรองหรือคำค้นหาของคุณ
         </p>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            onClick={onReset}
-            className="px-6 py-3 bg-[#019dff] text-white rounded-lg font-medium hover:bg-[#0187e6] transition-colors"
+        {/* Actions - Single Row */}
+        <div className="flex gap-3 justify-center">
+          {destinationName && (
+            <Link
+              href="/tour-search-10"
+              className="px-6 py-3 bg-[#019dff] text-white rounded-xl font-medium hover:bg-[#0187e6] transition-colors shadow-md"
+            >
+              ดูทัวร์ญี่ปุ่น
+            </Link>
+          )}
+          <Link
+            href="/tours"
+            className="px-6 py-3 bg-white border-2 border-[#019dff] text-[#019dff] rounded-xl font-medium hover:bg-[#e6f7ff] transition-colors"
           >
-            ล้างตัวกรองทั้งหมด
-          </button>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-          >
-            รีเฟรชหน้า
-          </button>
+            ดูทัวร์ทั้งหมด
+          </Link>
         </div>
       </div>
     </div>

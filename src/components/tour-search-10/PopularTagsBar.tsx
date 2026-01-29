@@ -72,7 +72,7 @@ export default function PopularTagsBar({ className = '' }: PopularTagsBarProps) 
   // Handle tag click
   const handleTagClick = (slug: string) => {
     // Navigate to the specific route
-    router.push(`/tour-search-9/${slug}`)
+    router.push(`/tour-search-10/${slug}`)
   }
 
   return (
