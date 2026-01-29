@@ -290,18 +290,12 @@ export default function SearchBarWithSuggestions({ value, onChange, onSearch, cu
                 <div className="px-4 py-2 text-xs text-gray-500 font-medium">
                   จุดหมายยอดนิยม
                 </div>
-                <div
-                  className="flex gap-1.5 sm:gap-2 px-3 pb-2 overflow-x-auto"
-                  style={{
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
-                  }}
-                >
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 px-3 pb-2">
                   {popularTags.map((tag, index) => (
                     <button
                       key={index}
                       onClick={() => handleTagClick(tag.slug)}
-                      className="flex-shrink-0 inline-flex items-center justify-center px-3 py-1.5 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-[#019dff] hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm"
+                      className="inline-flex items-center justify-center px-3 py-1.5 bg-white border border-gray-300 rounded-xl text-xs sm:text-sm font-medium text-[#019dff] hover:bg-[#e6f7ff] hover:border-[#019dff] hover:text-[#0187e6] transition-all duration-200 whitespace-nowrap shadow-sm"
                     >
                       {tag.label}
                     </button>

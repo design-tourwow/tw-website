@@ -372,9 +372,9 @@ export default function DestinationPage() {
           </div>
         </div>
         
-        {/* Popular Tags Bar - Below Search */}
+        {/* Popular Tags Bar - Below Search (destination-specific tags) */}
         <div className="mb-6">
-          <PopularTagsBar />
+          <PopularTagsBar destinationSlug={destination} />
         </div>
         
         <PopularDestinations />

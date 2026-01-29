@@ -26,7 +26,7 @@ function generateExtendedTitle(tour: TourData): string {
 
 // Unique highlight paragraphs for each tour
 const tourHighlights: Record<string, string> = {
-  '1': 'พาชมซากุระบานสะพรั่งที่โอซาก้า ช้อปจุใจย่านชินจูกุ โตเกียว ฟินกับบุฟเฟ่ต์ขาปูยักษ์สดๆ จากทะเล พร้อมพักโรงแรมหรู 5 ดาวใจกลางเมือง',
+  '1': 'พาชมซากุระบานสะพรั่งที่โอซาก้า ช้อปจุใจย่านชินจูกุ โตเกียว ฟินกับบุฟเฟ่ต์ขาปูยักษ์สดๆ จากทะเล พร้อมที่พักหรู 5 ดาวใจกลางเมือง',
   '2': 'หลงเสน่ห์ฮอกไกโดแดนหิมะขาว สัมผัสออนเซ็นน้ำแร่ธรรมชาติ ชมทุ่งลาเวนเดอร์สีม่วงสุดโรแมนติก ลิ้มรสอาหาร Kaiseki ระดับพรีเมียม',
   '3': 'ตื่นตากับ Gardens by the Bay สวนลอยฟ้าสุดล้ำ มันส์สุดเหวี่ยงที่ Universal Studios ช้อปแบรนด์เนมถูกกว่าไทยที่ Orchard Road',
   '4': 'ผจญภัยดินแดนซีกโลกตะวันออก ชมทะเลสาบ Big Almaty สีฟ้าใส ตะลุยภูเขาหิมะตระการตา สัมผัสวัฒนธรรม Silk Road อันเก่าแก่',
@@ -82,16 +82,26 @@ export default function TourCard({ tour, cardId }: TourCardProps) {
                   </div>
                   <div>
                     <p className="text-xs sm:text-sm text-gray-500 font-medium uppercase tracking-wider mb-0 truncate">{tour.airline}</p>
-                    <div className="flex items-center -mt-1 gap-0.5">
-                      <span className="text-sm sm:text-base font-bold mr-0.5 sm:mr-1">{tour.route.from}</span>
-                      <div className="w-3 sm:w-4 border-t border-dashed border-gray-400"></div>
-                      <span className="text-sm sm:text-base font-bold ml-0.5 sm:ml-1">{tour.route.to}</span>
-                    </div>
                   </div>
                 </div>
                 <div className={`px-1.5 sm:px-2 py-1.5 sm:py-2 bg-gradient-to-r ${tour.badgeColor === 'red' ? 'from-red-50 to-rose-50' : 'from-[#e6f7ff] to-[#e6f7ff]'} flex flex-col justify-center`}>
-                  <p className="text-xs sm:text-sm text-[#019dff] font-medium mb-0">ระยะเวลา</p>
-                  <p className={`text-sm sm:text-base font-bold ${tour.badgeColor === 'red' ? 'text-red-900' : 'text-[#019dff]'} -mt-1 whitespace-nowrap`}>{tour.duration}</p>
+                  <div className="flex items-center gap-1">
+                    <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${tour.badgeColor === 'red' ? 'text-red-900' : 'text-[#019dff]'}`} fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
+                    </svg>
+                    <p className={`text-sm sm:text-base font-bold ${tour.badgeColor === 'red' ? 'text-red-900' : 'text-[#019dff]'} whitespace-nowrap`}>{tour.duration}</p>
+                  </div>
+                  <div className="flex items-center gap-1 sm:gap-1.5 mt-0.5">
+                    <svg className={`w-4 h-4 sm:w-5 sm:h-5 ${tour.badgeColor === 'red' ? 'text-red-900' : 'text-[#019dff]'}`} fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M7 14c1.66 0 3-1.34 3-3S8.66 8 7 8s-3 1.34-3 3 1.34 3 3 3zm12-7h-8v8H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
+                    </svg>
+                    <span className="text-xs sm:text-sm font-medium text-gray-600">ที่พักระดับ</span>
+                    <div className="flex text-yellow-400 text-sm sm:text-base">
+                      {Array.from({ length: tour.rating }, (_, i) => (
+                        <span key={i}>★</span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -112,25 +122,9 @@ export default function TourCard({ tour, cardId }: TourCardProps) {
               </div>
             </div>
 
-            <h3 className="font-bold mb-0 leading-tight drop-shadow-lg text-xl sm:text-2xl">
+            <h3 className="font-bold mb-1 sm:mb-1.5 leading-tight drop-shadow-lg text-xl sm:text-2xl">
               {extendedTitle}
             </h3>
-
-            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-1.5 text-sm sm:text-base">
-              <div className="flex text-yellow-400 text-sm sm:text-base">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <span key={i}>
-                    {i < Math.floor(hotelRating) ? '★' : (i < hotelRating ? (
-                      <span style={{position: 'relative', display: 'inline-block'}}>
-                        <span style={{color: '#d1d5db'}}>★</span>
-                        <span style={{position: 'absolute', left: 0, top: 0, width: `${(hotelRating % 1) * 100}%`, overflow: 'hidden', color: '#fbbf24'}}>★</span>
-                      </span>
-                    ) : <span style={{color: '#d1d5db'}}>★</span>)}
-                  </span>
-                ))}
-              </div>
-              <span className="text-sm sm:text-base font-medium">พักโรงแรม {hotelRating} ดาว</span>
-            </div>
 
             <div className="mb-3 sm:mb-4 text-sm sm:text-base leading-relaxed">
               <p className="drop-shadow-lg font-medium line-clamp-2">
@@ -152,7 +146,7 @@ export default function TourCard({ tour, cardId }: TourCardProps) {
                     </svg>
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm opacity-90 font-medium">ประหยัด ฿{tour.discount.toLocaleString()} | ผ่อน ฿{Math.ceil(tour.price / 6).toLocaleString()}/เดือน</p>
+                <p className="text-xs sm:text-sm opacity-90 font-medium">ประหยัด ฿{tour.discount.toLocaleString()}</p>
               </div>
             </div>
           </div>
