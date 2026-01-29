@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { tourDatabase, filterAndSortTours, calculateFilterCounts } from '@/lib/tour-data-search'
+import { tourDatabase, filterAndSortTours, calculateFilterCounts, filterToursByDestination } from '@/lib/tour-data-search'
 import TourCard from '@/components/tour-search-10/TourCard'
 import FilterSidebar from '@/components/tour-search-10/FilterSidebar'
 import SortDropdown from '@/components/tour-search-10/SortDropdown'
@@ -203,46 +202,44 @@ export default function DestinationPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
   
-  // Filter states - Initialize with destination search query
+  // Get tours for this destination first
+  const destinationTours = useMemo(() => {
+    return filterToursByDestination(tourDatabase, destination)
+  }, [destination])
+
+  // Filter states - No longer need destination searchQuery since we filter by destination slug
   const [filters, setFilters] = useState({
     region: 'all',
     priceRange: 'all',
     duration: 'all',
     airline: 'all',
     rating: 0,
-    searchQuery: destinationInfo?.searchQuery || '',
+    searchQuery: '',
     holidays: [] as string[],
     priceRanges: [] as string[],
     durations: [] as string[],
     airlines: [] as string[]
   })
-  
+
   const [pendingSearchQuery, setPendingSearchQuery] = useState('')
-  
+
   const [sortBy, setSortBy] = useState('popular')
-  
-  // Update filters when destination changes
-  useEffect(() => {
-    if (destinationInfo) {
-      setFilters(prev => ({ ...prev, searchQuery: destinationInfo.searchQuery }))
-    }
-  }, [destinationInfo])
-  
+
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800)
     return () => clearTimeout(timer)
   }, [])
-  
-  // Filter and sort tours
+
+  // Filter and sort tours (using destinationTours as base)
   const filteredTours = useMemo(() => {
-    return filterAndSortTours(tourDatabase, filters, sortBy)
-  }, [filters, sortBy])
-  
-  // Calculate filter counts for real-time updates
+    return filterAndSortTours(destinationTours, filters, sortBy)
+  }, [destinationTours, filters, sortBy])
+
+  // Calculate filter counts for real-time updates (using destinationTours as base)
   const filterCounts = useMemo(() => {
-    return calculateFilterCounts(tourDatabase, filters)
-  }, [filters])
+    return calculateFilterCounts(destinationTours, filters)
+  }, [destinationTours, filters])
   
   const handleFilterChange = (key: string, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }))
@@ -255,7 +252,7 @@ export default function DestinationPage() {
       duration: 'all',
       airline: 'all',
       rating: 0,
-      searchQuery: destinationInfo?.searchQuery || '',
+      searchQuery: '',
       holidays: [],
       priceRanges: [],
       durations: [],
@@ -265,10 +262,8 @@ export default function DestinationPage() {
   }
 
   const handleSearch = (query: string) => {
-    // Combine destination query and user query for search
-    const baseQuery = destinationInfo?.searchQuery || ''
-    const combinedQuery = [baseQuery, query].filter(Boolean).join(' ')
-    setFilters(prev => ({ ...prev, searchQuery: combinedQuery }))
+    // Search within destination tours only
+    setFilters(prev => ({ ...prev, searchQuery: query }))
   }
   
   const activeFilterCount = [
@@ -356,21 +351,23 @@ export default function DestinationPage() {
         {/* Mobile Search Bar - Below Breadcrumb */}
         <div className="lg:hidden mb-3">
           <div className="max-w-full mx-auto">
-            <SearchBarWithSuggestions 
+            <SearchBarWithSuggestions
               value={pendingSearchQuery}
               onChange={setPendingSearchQuery}
               onSearch={handleSearch}
+              currentDestination={{ slug: destination, searchQuery: destinationInfo.searchQuery }}
             />
           </div>
         </div>
-        
+
         {/* Desktop Search Bar */}
         <div className="hidden lg:block mb-3">
           <div className="max-w-full mx-auto">
-            <SearchBarWithSuggestions 
+            <SearchBarWithSuggestions
               value={pendingSearchQuery}
               onChange={setPendingSearchQuery}
               onSearch={handleSearch}
+              currentDestination={{ slug: destination, searchQuery: destinationInfo.searchQuery }}
             />
           </div>
         </div>
@@ -388,10 +385,11 @@ export default function DestinationPage() {
         <div className="lg:hidden fixed top-16 left-0 right-0 z-40 pt-0.5">
           <div className="container mx-auto px-4" style={{ maxWidth: '1200px' }}>
             {/* Mobile Search Bar Only */}
-            <SearchBarWithSuggestions 
+            <SearchBarWithSuggestions
               value={pendingSearchQuery}
               onChange={setPendingSearchQuery}
               onSearch={handleSearch}
+              currentDestination={{ slug: destination, searchQuery: destinationInfo.searchQuery }}
             />
           </div>
         </div>
@@ -647,28 +645,6 @@ export default function DestinationPage() {
         activeCount={activeFilterCount}
         resultsCount={filteredTours.length}
       />
-
-      {/* Floating Back to Main Button */}
-      <Link
-        href="/tour-search-10"
-        className="fixed bottom-6 left-6 z-40 px-4 py-3 bg-white border-2 border-[#019dff] text-[#019dff] rounded-full shadow-lg hover:bg-[#e6f7ff] transition-all flex items-center gap-2 font-medium hover:scale-105"
-        aria-label="กลับไปหน้าค้นหาทัวร์"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-        <span className="text-sm">ทัวร์ทั้งหมด</span>
-      </Link>
 
       {/* Go to Top Button */}
       {showGoToTop && (

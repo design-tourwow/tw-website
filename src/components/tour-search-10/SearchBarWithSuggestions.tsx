@@ -8,6 +8,11 @@ interface SearchBarWithSuggestionsProps {
   value: string
   onChange: (value: string) => void
   onSearch?: (query: string) => void
+  /** Current destination context (e.g., 'tokyo'). When set, suggestions are filtered to this destination only */
+  currentDestination?: {
+    slug: string
+    searchQuery: string // e.g., 'โตเกียว Tokyo'
+  }
 }
 
 // Popular tags data (same as PopularTagsBar)
@@ -26,7 +31,7 @@ const popularTags = [
   { label: 'ทัวร์ญี่ปุ่น เซนได', slug: 'sendai' }
 ]
 
-export default function SearchBarWithSuggestions({ value, onChange, onSearch }: SearchBarWithSuggestionsProps) {
+export default function SearchBarWithSuggestions({ value, onChange, onSearch, currentDestination }: SearchBarWithSuggestionsProps) {
   const router = useRouter()
   const [isFocused, setIsFocused] = useState(false)
   const [showTags, setShowTags] = useState(false)
@@ -63,7 +68,17 @@ export default function SearchBarWithSuggestions({ value, onChange, onSearch }: 
       if (value.length >= 3) {
         // When typing 3+ characters, show tour name suggestions
         const query = value.toLowerCase()
-        const matchedTours = tourDatabase.filter(tour => {
+
+        // First, filter by current destination if set (using destinations array)
+        let toursToSearch = tourDatabase
+        if (currentDestination) {
+          toursToSearch = tourDatabase.filter(tour =>
+            tour.destinations.includes(currentDestination.slug)
+          )
+        }
+
+        // Then, filter by user's search query
+        const matchedTours = toursToSearch.filter(tour => {
           // Match against tour title
           if (tour.title.toLowerCase().includes(query)) {
             return true
@@ -73,13 +88,13 @@ export default function SearchBarWithSuggestions({ value, onChange, onSearch }: 
             return true
           }
           return false
-        }) // Show all matched tours (no limit)
+        })
 
         setTourSuggestions(matchedTours)
         setShowTags(false) // Hide tags when showing tour suggestions
       } else if (value.length === 0) {
-        // When input is empty, show popular tags
-        setShowTags(true)
+        // When input is empty, show popular tags only if NOT on a destination page
+        setShowTags(!currentDestination)
         setTourSuggestions([])
       } else {
         // 1-2 characters: don't show anything yet
@@ -90,7 +105,7 @@ export default function SearchBarWithSuggestions({ value, onChange, onSearch }: 
       setShowTags(false)
       setTourSuggestions([])
     }
-  }, [value, isFocused])
+  }, [value, isFocused, currentDestination])
 
   // Cleanup typing timeout on unmount
   useEffect(() => {
@@ -193,11 +208,11 @@ export default function SearchBarWithSuggestions({ value, onChange, onSearch }: 
             
             <div className="w-full pl-11 pr-24 px-2 min-h-[48px] border-2 border-transparent rounded-lg transition-colors flex items-center gap-1.5">
               {/* Input */}
-              <input 
+              <input
                 ref={inputRef}
-                type="text" 
+                type="text"
                 placeholder="ไปเที่ยวไหนดี? พิมพ์ชื่อจุดหมายที่อยากไป"
-                className="flex-1 min-w-[120px] outline-none text-base text-gray-900 bg-transparent" 
+                className="flex-1 min-w-[120px] outline-none text-base text-gray-900 bg-transparent"
                 aria-label="ค้นหาทัวร์"
                 value={value}
                 onChange={(e) => {
